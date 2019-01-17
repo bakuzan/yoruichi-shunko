@@ -8,16 +8,22 @@ import Html.Styled.Attributes exposing (css)
 import Models exposing (Model)
 import Msgs exposing (Msg)
 
+import Components.RadioButton as RadioButton
+import Utils.Constants exposing(calendarModeOptions)
+
 
 view : Model -> Html Msg
 view model =
     div 
     [ css 
         [ displayFlex
-        , justifyContent center
-        , alignItems center
-        , height (vh 100)
-        , margin auto
+        , flexDirection column
+        , minHeight (calc (vh 100) minus (px 50))
         ] 
     ]
-    [ text "App skeleton created placeholder"]
+    [ RadioButton.radioGroup "calendar-modes" model.calendarMode calendarModeOptions
+    , div 
+      []
+      [ text "calendar to go here"
+      ]
+    ]

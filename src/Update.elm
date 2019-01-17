@@ -6,6 +6,9 @@ import Models exposing (Model)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
-
-
+    case msg of
+      Msgs.UpdateCalendarMode mode ->
+        ( { model | calendarMode = mode }, Cmd.none)
+        
+      _ ->
+        ( model, Cmd.none )

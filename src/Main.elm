@@ -12,7 +12,7 @@ import View exposing (view)
 
 init : ( Model, Cmd Msg )
 init =
-    ( {}, Cmd.none )
+    ( initialModel, Cmd.none )
 
 
 main : Program () Model Msg
