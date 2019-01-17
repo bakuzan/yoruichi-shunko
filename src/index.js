@@ -1,5 +1,4 @@
 import { Elm } from "./Main.elm";
-import registerServiceWorker from "./registerServiceWorker";
 
 if (process.env.NODE_ENV === "development") {
   console.log(
@@ -9,5 +8,4 @@ if (process.env.NODE_ENV === "development") {
   Elm.Main.init({
     node: document.getElementById("yoruichi")
   });
-  registerServiceWorker();
 }
