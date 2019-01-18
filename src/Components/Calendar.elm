@@ -1,9 +1,10 @@
 module Components.Calendar exposing (view)
 
 import Components.Button as Button
+import Css exposing (..)
 import Date exposing (Unit(..), add, fromPosix)
 import Html.Styled exposing (Html, button, div, table, tbody, td, text, th, thead, tr)
-import Html.Styled.Attributes exposing (class, classList)
+import Html.Styled.Attributes exposing (class, classList, css)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (Model, YRIDateProperty(..))
 import Msgs exposing (Msg)
@@ -14,7 +15,14 @@ import Utils.Date as YRIDate
 
 view : String -> Time.Zone -> Time.Posix -> Time.Posix -> Html Msg
 view mode zone viewDate selectedDate =
-    div [ class "yri-calendar" ]
+    div
+        [ class "yri-calendar"
+        , css
+            [ displayFlex
+            , flexDirection column
+            , padding (em 0.33)
+            ]
+        ]
         [ viewControls zone viewDate
         , table
             [ class "yri-calendar__table" ]
@@ -38,7 +46,14 @@ viewControls zone viewDate =
             Date.add Months -1 date
                 |> YRIDate.dateToPosix zone
     in
-    div [ class "yri-calendar__controls" ]
+    div
+        [ class "yri-calendar__controls"
+        , css
+            [ displayFlex
+            , justifyContent spaceAround
+            , padding (em 0.33)
+            ]
+        ]
         [ Button.view
             [ onClick (Msgs.UpdateDate CalendarViewDate prevDate)
             ]
@@ -116,7 +131,13 @@ viewDay num =
             num == 0
     in
     td
-        [ class "yri-week__day yri-day"
+        [ css
+            [ width (em 3)
+            , height (em 3)
+            , textAlign center
+            , verticalAlign middle
+            ]
+        , class "yri-week__day yri-day"
         , classList
             [ ( "yri-day--dummy", isDummy )
             , ( "yri-day--active", False )
