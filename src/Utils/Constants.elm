@@ -1,28 +1,24 @@
-module Utils.Constants exposing (..)
-
-import Msgs
+module Utils.Constants exposing (calendarModeOptions)
 
 import Components.RadioButton exposing (RadioOption)
+import Msgs
+
 
 calendarModeOptions : List RadioOption
 calendarModeOptions =
-  [ 
-    { 
-      label = "Day", 
-      optionValue = "DAY", 
-      action = Msgs.UpdateCalendarMode "DAY", 
-      disabled = False 
-    }
-  , { 
-      label = "Week", 
-      optionValue = "WEEK",
-      action = Msgs.UpdateCalendarMode "WEEK", 
-      disabled = False 
-    }
-  , { 
-      label = "Month", 
-      optionValue = "MONTH",
-      action = Msgs.UpdateCalendarMode "MONTH", 
-      disabled = False 
-    }
-  ]
+    [ { label = "Day"
+      , optionValue = "DAY"
+      , action = Msgs.UpdateCalendarMode "DAY"
+      , disabled = False
+      }
+    , { label = "Week"
+      , optionValue = "WEEK"
+      , action = Msgs.UpdateCalendarMode "WEEK"
+      , disabled = False
+      }
+    , { label = "Month"
+      , optionValue = "MONTH"
+      , action = Msgs.UpdateCalendarMode "MONTH"
+      , disabled = False
+      }
+    ]

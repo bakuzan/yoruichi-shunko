@@ -1,7 +1,7 @@
 module View exposing (view)
 
-import Components.RadioButton as RadioButton
 import Components.Calendar as Calendar
+import Components.RadioButton as RadioButton
 import Css exposing (..)
 import Html
 import Html.Styled exposing (..)

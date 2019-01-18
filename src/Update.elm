@@ -13,14 +13,16 @@ update msg model =
             ( { model | calendarMode = mode }, Cmd.none )
 
         Msgs.UpdateDate prop posix ->
-           let
-             updatedModel = 
-                case prop of
-                  Models.CalendarViewDate -> { model | calendarViewDate = posix }
-                  _ -> model
-               
-           in
-           ( updatedModel, Cmd.none )
+            let
+                updatedModel =
+                    case prop of
+                        Models.CalendarViewDate ->
+                            { model | calendarViewDate = posix }
+
+                        _ ->
+                            model
+            in
+            ( updatedModel, Cmd.none )
 
         -- Time basics
         Msgs.Zone zone ->

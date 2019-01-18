@@ -1,4 +1,4 @@
-module Models exposing (..)
+module Models exposing (Model, YRIDateProperty(..), initialModel)
 
 import Time
 
@@ -19,6 +19,7 @@ initialModel =
     , calendarViewDate = Time.millisToPosix 0
     }
 
+
 type YRIDateProperty
-  = Today
-  | CalendarViewDate
+    = Today
+    | CalendarViewDate

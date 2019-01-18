@@ -1,7 +1,7 @@
 module Msgs exposing (Msg(..))
 
+import Models exposing (YRIDateProperty)
 import Time
-import Models exposing(YRIDateProperty)
 
 
 type Msg
