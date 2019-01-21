@@ -42,11 +42,15 @@ view state data =
             ]
         ]
         [ viewControls state data.view
-        , table
-            [ class "yri-calendar__table" ]
-            [ viewDayNameHeader state
-            , viewCalendarBody state data
-            ]
+        , if state.mode /= Models.Day then
+            table
+                [ class "yri-calendar__table" ]
+                [ viewDayNameHeader state
+                , viewCalendarBody state data
+                ]
+
+          else
+            div [] [ text "Day not implemented yet" ]
         ]
 
 
@@ -145,9 +149,6 @@ viewCalendarBody state data =
 
         squaresInRows =
             Common.splitList 7 days
-
-        logger =
-            Debug.log "Week/Month" squaresInRows
     in
     tbody []
         ([]
@@ -160,9 +161,6 @@ viewCalendarWeek state data squares =
     let
         len =
             List.length squares
-
-        squaresWithDummies =
-            squares ++ populateArrayForDummies (7 - len)
 
         isWeekView =
             state.mode == Models.Week
@@ -177,6 +175,19 @@ viewCalendarWeek state data squares =
                         x == YRIDate.getDayBeginningInMillis state.zone data.view
                 )
                 squares
+
+        aDateInTheWeek =
+            List.filter (\x -> x /= 0) squares
+                |> List.head
+                |> Maybe.withDefault 0
+                |> Time.millisToPosix
+
+        fullWeekOfSquares =
+            if isWeekView then
+                YRIDate.getWeekForPosix state.zone aDateInTheWeek
+
+            else
+                squares ++ populateArrayForDummies (7 - len)
     in
     if not isWeekView || isActive then
         tr
@@ -184,7 +195,7 @@ viewCalendarWeek state data squares =
             , classList [ ( "yri-week--active", isActive ) ]
             ]
             ([]
-                ++ List.map (viewDay state data) squaresWithDummies
+                ++ List.map (viewDay state data) fullWeekOfSquares
             )
 
     else
