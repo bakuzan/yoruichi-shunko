@@ -2,19 +2,37 @@ module Components.Calendar exposing (view)
 
 import Components.Button as Button
 import Css exposing (..)
+import Css.Global
 import Date exposing (Unit(..), add, fromPosix)
-import Html.Styled exposing (Html, button, div, table, tbody, td, text, th, thead, tr)
-import Html.Styled.Attributes exposing (class, classList, css)
+import Html.Styled exposing (Html, button, div, table, tbody, td, text, th, thead, tr, ul)
+import Html.Styled.Attributes exposing (class, classList, css, disabled)
 import Html.Styled.Events exposing (onClick)
-import Models exposing (Model, YRIDateProperty(..))
+import Models exposing (CalendarMode, Model, Todo, YRIDateProperty(..))
 import Msgs exposing (Msg)
 import Time exposing (Month(..))
+import Time.Extra as Time exposing (Interval(..))
 import Utils.Common as Common
 import Utils.Date as YRIDate
 
 
-view : String -> Time.Zone -> Time.Posix -> Time.Posix -> Html Msg
-view mode zone viewDate selectedDate =
+type alias CalendarState =
+    { zone : Time.Zone
+    , mode : CalendarMode
+    , isDatepicker : Bool
+    }
+
+
+type alias CalendarData =
+    { today : Time.Posix
+    , view : Time.Posix
+    , selected : Time.Posix
+    , selectedType : YRIDateProperty
+    , records : List Todo
+    }
+
+
+view : CalendarState -> CalendarData -> Html Msg
+view state data =
     div
         [ class "yri-calendar"
         , css
@@ -23,28 +41,49 @@ view mode zone viewDate selectedDate =
             , padding (em 0.33)
             ]
         ]
-        [ viewControls zone viewDate
+        [ viewControls state data.view
         , table
             [ class "yri-calendar__table" ]
-            [ viewDayNameHeader
-            , viewCalendarBody zone viewDate selectedDate
+            [ viewDayNameHeader state
+            , viewCalendarBody state data
             ]
         ]
 
 
-viewControls : Time.Zone -> Time.Posix -> Html Msg
-viewControls zone viewDate =
+viewControls : CalendarState -> Time.Posix -> Html Msg
+viewControls state viewDate =
     let
+        logger =
+            Debug.log "View Date" (Date.fromPosix state.zone viewDate |> Date.format "DD MMM YYYY")
+
         date =
-            fromPosix zone viewDate
+            fromPosix state.zone viewDate
+
+        offset =
+            if state.mode /= Models.Week then
+                1
+
+            else
+                7
+
+        interval =
+            case state.mode of
+                Models.Day ->
+                    Days
+
+                Models.Week ->
+                    Days
+
+                Models.Month ->
+                    Months
 
         nextDate =
-            Date.add Months 1 date
-                |> YRIDate.dateToPosix zone
+            Date.add interval offset date
+                |> YRIDate.dateToPosix state.zone
 
         prevDate =
-            Date.add Months -1 date
-                |> YRIDate.dateToPosix zone
+            Date.add interval -offset date
+                |> YRIDate.dateToPosix state.zone
     in
     div
         [ class "yri-calendar__controls"
@@ -68,8 +107,8 @@ viewControls zone viewDate =
         ]
 
 
-viewDayNameHeader : Html Msg
-viewDayNameHeader =
+viewDayNameHeader : CalendarState -> Html Msg
+viewDayNameHeader state =
     let
         from =
             Date.fromCalendarDate 2019 Jan 7
@@ -77,8 +116,15 @@ viewDayNameHeader =
         until =
             Date.fromCalendarDate 2019 Jan 14
 
+        cssForTh =
+            if state.isDatepicker then
+                []
+
+            else
+                [ textAlign left ]
+
         viewHeaderCell day =
-            th []
+            th [ css cssForTh ]
                 [ text (Date.format "EE" day)
                 ]
     in
@@ -88,69 +134,153 @@ viewDayNameHeader =
         ]
 
 
-viewCalendarBody : Time.Zone -> Time.Posix -> Time.Posix -> Html Msg
-viewCalendarBody zone viewDate selectedDate =
+viewCalendarBody : CalendarState -> CalendarData -> Html Msg
+viewCalendarBody state data =
     let
         date =
-            Date.fromPosix zone viewDate
+            Date.fromPosix state.zone data.view
 
         days =
-            getMonthDays zone date
+            getMonthDays state.zone date
 
         squaresInRows =
             Common.splitList 7 days
+
+        logger =
+            Debug.log "Week/Month" squaresInRows
     in
     tbody []
         ([]
-            ++ List.map viewCalendarWeek squaresInRows
+            ++ List.map (viewCalendarWeek state data) squaresInRows
         )
 
 
-viewCalendarWeek : List Int -> Html Msg
-viewCalendarWeek squares =
+viewCalendarWeek : CalendarState -> CalendarData -> List Int -> Html Msg
+viewCalendarWeek state data squares =
     let
         len =
             List.length squares
 
         squaresWithDummies =
             squares ++ populateArrayForDummies (7 - len)
+
+        isWeekView =
+            state.mode == Models.Week
+
+        isActive =
+            List.any
+                (\x ->
+                    if state.isDatepicker then
+                        False
+
+                    else
+                        x == YRIDate.getDayBeginningInMillis state.zone data.view
+                )
+                squares
     in
-    tr
-        [ class "yri-calendar__week yri-week"
-        , classList [ ( "yri-week--active", False ) ]
-        ]
-        ([]
-            ++ List.map viewDay squaresWithDummies
-        )
+    if not isWeekView || isActive then
+        tr
+            [ class "yri-calendar__week yri-week"
+            , classList [ ( "yri-week--active", isActive ) ]
+            ]
+            ([]
+                ++ List.map (viewDay state data) squaresWithDummies
+            )
+
+    else
+        text ""
 
 
-viewDay : Int -> Html Msg
-viewDay num =
+viewDay : CalendarState -> CalendarData -> Int -> Html Msg
+viewDay state data millis =
     let
         isDummy =
-            num == 0
+            millis == 0
+
+        isToday =
+            millis == YRIDate.getDayBeginningInMillis state.zone data.today
+
+        isSelected =
+            state.isDatepicker
+                && millis
+                == YRIDate.getDayBeginningInMillis state.zone data.selected
+
+        asPosix =
+            Time.millisToPosix millis
+
+        cssForTd =
+            if state.isDatepicker then
+                [ textAlign center, verticalAlign middle ]
+
+            else
+                [ width (em 3), height (em 3) ]
+
+        dayPadding =
+            padding2 (px 0) (em 0.66)
+
+        numDisplay =
+            [ text
+                (if not isDummy then
+                    String.fromInt (Date.fromPosix state.zone asPosix |> Date.day)
+
+                 else
+                    ""
+                )
+            ]
     in
     td
         [ css
-            [ width (em 3)
-            , height (em 3)
-            , textAlign center
-            , verticalAlign middle
-            ]
+            (cssForTd
+                ++ [ border3 (px 1) solid transparent
+                   , hover
+                        [ Css.Global.descendants
+                            [ Css.Global.class "button-link" [ visibility visible ]
+                            ]
+                        ]
+                   ]
+            )
         , class "yri-week__day yri-day"
         , classList
             [ ( "yri-day--dummy", isDummy )
-            , ( "yri-day--active", False )
-            , ( "yri-day--is-today", False )
+            , ( "yri-day--active", isSelected )
+            , ( "yri-day--is-today", isToday )
             ]
         ]
-        [ text
-            (if not isDummy then
-                String.fromInt num
+        [ if not state.isDatepicker then
+            div [ css [ dayPadding ] ] numDisplay
 
-             else
-                ""
-            )
+          else
+            Button.view
+                [ css [ dayPadding ]
+                , disabled isDummy
+                , onClick (Msgs.UpdateDate data.selectedType asPosix)
+                ]
+                numDisplay
+        , if not state.isDatepicker && not isDummy then
+            div
+                [ class "yri-day__content"
+                , css
+                    [ dayPadding
+                    , paddingBottom (em 0.66)
+                    ]
+                ]
+                [ ul [ class "list column one" ] []
+                , div
+                    [ css
+                        [ displayFlex
+                        , justifyContent flexEnd
+                        ]
+                    ]
+                    [ Button.viewLink
+                        [ css [ visibility hidden ]
+                        , onClick (Msgs.DisplayTodoForm asPosix)
+                        ]
+                        [ text "Add" ]
+                    ]
+                ]
+
+          else
+            text ""
         ]
 
 
@@ -170,11 +300,21 @@ getMonthDays zone date =
         dummyDays =
             populateArrayForDummies (startingWeekdayNum - 1)
 
-        squares =
-            dummyDays ++ List.range 1 monthLength
+        start =
+            Time.Parts (Date.year date) (Date.month date) 1 0 0 0 0
+                |> Time.partsToPosix zone
 
-        logger =
-            Debug.log "Dumb" dummyDays
+        until =
+            Time.Parts (Date.year date) (Date.month date) monthLength 0 0 0 0
+                |> Time.partsToPosix zone
+
+        daysInMillis =
+            Time.range Day 1 zone start until
+                |> (\l -> l ++ [ until ])
+                |> List.map Time.posixToMillis
+
+        squares =
+            dummyDays ++ daysInMillis
     in
     squares
 

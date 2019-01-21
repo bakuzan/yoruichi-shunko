@@ -7,17 +7,17 @@ import Msgs
 calendarModeOptions : List RadioOption
 calendarModeOptions =
     [ { label = "Day"
-      , optionValue = "DAY"
+      , optionValue = "Day"
       , action = Msgs.UpdateCalendarMode "DAY"
       , disabled = False
       }
     , { label = "Week"
-      , optionValue = "WEEK"
+      , optionValue = "Week"
       , action = Msgs.UpdateCalendarMode "WEEK"
       , disabled = False
       }
     , { label = "Month"
-      , optionValue = "MONTH"
+      , optionValue = "Month"
       , action = Msgs.UpdateCalendarMode "MONTH"
       , disabled = False
       }

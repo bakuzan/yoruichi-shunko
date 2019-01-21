@@ -6,13 +6,32 @@ import Css exposing (..)
 import Html
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css)
-import Models exposing (Model)
+import Models exposing (Model, YRIDateProperty(..))
 import Msgs exposing (Msg)
+import Utils.Common as Common
 import Utils.Constants exposing (calendarModeOptions)
 
 
 view : Model -> Html Msg
 view model =
+    let
+        calendarState =
+            { zone = model.zone
+            , mode = model.calendarMode
+            , isDatepicker = False
+            }
+
+        calendarData =
+            { today = model.today
+            , view = model.calendarViewDate
+            , selected = model.calendarViewDate
+            , selectedType = Ignored
+            , records = []
+            }
+
+        calendarMode =
+            Common.calendarModeToString model.calendarMode
+    in
     div
         [ css
             [ displayFlex
@@ -20,9 +39,16 @@ view model =
             , minHeight (calc (vh 100) minus (px 50))
             ]
         ]
-        [ RadioButton.radioGroup "calendar-modes" model.calendarMode calendarModeOptions
-        , div
-            []
-            [ Calendar.view model.calendarMode model.zone model.calendarViewDate model.today
-            ]
-        ]
+        ([]
+            ++ (if not model.displayForm then
+                    [ RadioButton.radioGroup "calendar-modes" calendarMode calendarModeOptions
+                    , div
+                        []
+                        [ Calendar.view calendarState calendarData
+                        ]
+                    ]
+
+                else
+                    [ div [] [ text "Form Placeholder" ] ]
+               )
+        )

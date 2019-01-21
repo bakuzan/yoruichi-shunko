@@ -10,3 +10,4 @@ type Msg
     | NewTime Time.Posix
     | UpdateCalendarMode String
     | UpdateDate YRIDateProperty Time.Posix
+    | DisplayTodoForm Time.Posix

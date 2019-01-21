@@ -1,4 +1,4 @@
-module Utils.Date exposing (dateToPosix, getFirstOfMonth, getMonthLength, getMonthStartWeekDayNumber)
+module Utils.Date exposing (dateToPosix, getDayBeginningInMillis, getFirstOfMonth, getMonthLength, getMonthStartWeekDayNumber)
 
 import Date exposing (Unit(..))
 import Time exposing (Posix, Zone)
@@ -36,3 +36,9 @@ getFirstOfMonth zone date =
     Time.Parts (Date.year date) (Date.month date) 1 0 0 0 0
         |> Time.partsToPosix zone
         |> Date.fromPosix zone
+
+
+getDayBeginningInMillis : Zone -> Time.Posix -> Int
+getDayBeginningInMillis zone posix =
+    Time.floor Day zone posix
+        |> Time.posixToMillis
