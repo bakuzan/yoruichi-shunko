@@ -50,7 +50,21 @@ view state data =
                 ]
 
           else
-            div [] [ text "Day not implemented yet" ]
+            table
+                [ class "yri-calendar__table" ]
+                [ thead []
+                    [ tr []
+                        [ th []
+                            [ text (Date.format "EEEE" (Date.fromPosix state.zone data.view))
+                            ]
+                        ]
+                    ]
+                , tbody []
+                    [ tr []
+                        [ viewDay state data (Time.posixToMillis data.view)
+                        ]
+                    ]
+                ]
         ]
 
 
@@ -58,10 +72,32 @@ viewControls : CalendarState -> Time.Posix -> Html Msg
 viewControls state viewDate =
     let
         logger =
-            Debug.log "View Date" (Date.fromPosix state.zone viewDate |> Date.format "DD MMM YYYY")
+            Debug.log "View Date" (Date.fromPosix state.zone viewDate |> Date.format "dd MMM YYYY")
 
         date =
             fromPosix state.zone viewDate
+
+        startOfWeek =
+            YRIDate.getMonday state.zone viewDate
+
+        endOfWeek =
+            YRIDate.getSunday state.zone viewDate
+
+        dateFormat =
+            if state.mode /= Models.Month then
+                "dd MMM YYYY"
+
+            else
+                "MMM YYYY"
+
+        displayDate =
+            if state.mode == Models.Week then
+                Date.format dateFormat (Date.fromPosix state.zone startOfWeek)
+                    ++ " - "
+                    ++ Date.format dateFormat (Date.fromPosix state.zone endOfWeek)
+
+            else
+                Date.format dateFormat date
 
         offset =
             if state.mode /= Models.Week then
@@ -103,7 +139,7 @@ viewControls state viewDate =
             [ text "prev" ]
         , div
             [ class "yri-calendar__month-text" ]
-            [ text (Date.format "MMM YYYY" date) ]
+            [ text displayDate ]
         , Button.view
             [ onClick (Msgs.UpdateDate CalendarViewDate nextDate)
             ]
@@ -128,7 +164,7 @@ viewDayNameHeader state =
                 [ textAlign left ]
 
         viewHeaderCell day =
-            th [ css cssForTh ]
+            th [ css ([ padding2 (px 0) (em 0.33) ] ++ cssForTh) ]
                 [ text (Date.format "EE" day)
                 ]
     in
@@ -219,6 +255,9 @@ viewDay state data millis =
         asPosix =
             Time.millisToPosix millis
 
+        asDate =
+            Date.fromPosix state.zone asPosix
+
         cssForTd =
             if state.isDatepicker then
                 [ textAlign center, verticalAlign middle ]
@@ -227,12 +266,19 @@ viewDay state data millis =
                 [ width (em 3), height (em 3) ]
 
         dayPadding =
-            padding2 (px 0) (em 0.66)
+            padding2 (px 0) (em 0.33)
+
+        showMonth =
+            state.mode == Models.Week
 
         numDisplay =
             [ text
                 (if not isDummy then
-                    String.fromInt (Date.fromPosix state.zone asPosix |> Date.day)
+                    if showMonth then
+                        Date.format "dd MMM" asDate
+
+                    else
+                        String.fromInt (asDate |> Date.day)
 
                  else
                     ""
@@ -257,7 +303,10 @@ viewDay state data millis =
             , ( "yri-day--is-today", isToday )
             ]
         ]
-        [ if not state.isDatepicker then
+        [ if state.mode == Models.Day then
+            text ""
+
+          else if not state.isDatepicker then
             div [ css [ dayPadding ] ] numDisplay
 
           else
@@ -272,7 +321,7 @@ viewDay state data millis =
                 [ class "yri-day__content"
                 , css
                     [ dayPadding
-                    , paddingBottom (em 0.66)
+                    , paddingBottom (em 0.33)
                     ]
                 ]
                 [ ul [ class "list column one" ] []

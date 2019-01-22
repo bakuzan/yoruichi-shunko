@@ -1,4 +1,4 @@
-module Utils.Date exposing (dateToPosix, getDayBeginningInMillis, getFirstOfMonth, getMonthLength, getMonthStartWeekDayNumber, getWeekForPosix)
+module Utils.Date exposing (dateToPosix, getDayBeginningInMillis, getFirstOfMonth, getMonday, getMonthLength, getMonthStartWeekDayNumber, getSunday, getWeekForPosix)
 
 import Date exposing (Unit(..))
 import Time exposing (Posix, Zone)
@@ -67,6 +67,5 @@ getWeekForPosix zone posix =
 
         until =
             getSunday zone posix
-
     in
     List.map Time.posixToMillis (Time.range Day 1 zone start until ++ [ until ])
