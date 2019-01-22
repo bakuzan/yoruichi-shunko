@@ -1,4 +1,4 @@
-module Models exposing (CalendarMode(..), Model, Todo, YRIDateProperty(..), initialModel)
+module Models exposing (CalendarMode(..), Model, Todo, TodoForm, YRIDateProperty(..), initialModel, todoFormDefaults)
 
 import Time
 
@@ -14,6 +14,7 @@ type alias Model =
     , calendarViewDate : Time.Posix
     , displayForm : Bool
     , todoForm : TodoForm
+    , displayDatepicker : Bool
     }
 
 
@@ -24,7 +25,8 @@ initialModel =
     , zone = Time.utc
     , calendarViewDate = Time.millisToPosix 0
     , displayForm = False
-    , todoForm = TodoForm 0 "" (Time.millisToPosix 0)
+    , todoForm = todoFormDefaults
+    , displayDatepicker = False
     }
 
 
@@ -44,7 +46,15 @@ type alias TodoForm =
     { id : Int
     , name : String
     , date : Time.Posix
+    , repeatPattern : String
+    , repeatFor : Int
+    , repeatWeekDefinition : Int
     }
+
+
+todoFormDefaults : TodoForm
+todoFormDefaults =
+    TodoForm 0 "" (Time.millisToPosix 0) "None" 1 1
 
 
 
@@ -61,3 +71,4 @@ type YRIDateProperty
     = Ignored
     | Today
     | CalendarViewDate
+    | FormDate

@@ -9,10 +9,10 @@ import Msgs exposing (Msg)
 view : List (Html.Styled.Attribute msg) -> List (Html.Styled.Html msg) -> Html.Styled.Html msg
 view attrs children =
     button
-        ([ class "yri-button button ripple" ] ++ attrs)
+        ([ class "yri-button button ripple", type_ "button" ] ++ attrs)
         children
 
 
 viewLink : List (Html.Styled.Attribute msg) -> List (Html.Styled.Html msg) -> Html.Styled.Html msg
 viewLink attrs children =
-    view (attrs ++ [ class "button-link" ]) children
+    view ([ class "button-link", type_ "button" ] ++ attrs) children

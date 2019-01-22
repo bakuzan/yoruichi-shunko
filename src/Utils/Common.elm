@@ -1,13 +1,18 @@
-module Utils.Common exposing (calendarModeToString, setRole, splitList, stringToCalendarMode)
+module Utils.Common exposing (calendarModeToString, repeatForMax, setCustomAttr, setRole, splitList, stringToCalendarMode)
 
 import Html.Styled exposing (Attribute)
 import Html.Styled.Attributes exposing (attribute)
 import Models exposing (CalendarMode(..))
 
 
+setCustomAttr : String -> String -> Attribute msg
+setCustomAttr attr val =
+    attribute attr val
+
+
 setRole : String -> Attribute msg
 setRole value =
-    attribute "role" value
+    setCustomAttr "role" value
 
 
 splitList : Int -> List a -> List (List a)
@@ -51,3 +56,29 @@ stringToCalendarMode str =
 
         _ ->
             Month
+
+
+
+-- Repeat mapping
+
+
+repeatForMax : String -> Int
+repeatForMax pattern =
+    case pattern of
+        "Daily" ->
+            28
+
+        "Weekly" ->
+            52
+
+        "Monthly" ->
+            12
+
+        "Quarterly" ->
+            8
+
+        "Yearly" ->
+            4
+
+        _ ->
+            0

@@ -1,4 +1,4 @@
-module Utils.Constants exposing (calendarModeOptions)
+module Utils.Constants exposing (calendarModeOptions, repeatPatternOptions)
 
 import Components.RadioButton exposing (RadioOption)
 import Msgs
@@ -21,4 +21,15 @@ calendarModeOptions =
       , action = Msgs.UpdateCalendarMode "Month"
       , disabled = False
       }
+    ]
+
+
+repeatPatternOptions : List ( String, String )
+repeatPatternOptions =
+    [ ( "None", "None" )
+    , ( "Daily", "Daily" )
+    , ( "Weekly", "Weekly" )
+    , ( "Monthly", "Monthly" )
+    , ( "Quarterly", "Quarterly" )
+    , ( "Yearly", "Yearly" )
     ]

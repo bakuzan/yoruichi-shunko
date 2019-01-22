@@ -1,4 +1,4 @@
-module Components.Calendar exposing (view)
+module Components.Calendar exposing (CalendarData, CalendarState, view)
 
 import Components.Button as Button
 import Css exposing (..)
@@ -19,6 +19,7 @@ type alias CalendarState =
     { zone : Time.Zone
     , mode : CalendarMode
     , isDatepicker : Bool
+    , isOpen : Bool
     }
 
 
@@ -42,7 +43,7 @@ view state data =
             ]
         ]
         [ viewControls state data.view
-        , if state.mode /= Models.Day then
+        , if state.isDatepicker || state.mode /= Models.Day then
             table
                 [ class "yri-calendar__table" ]
                 [ viewDayNameHeader state
@@ -74,9 +75,6 @@ viewControls state viewDate =
         logger =
             Debug.log "View Date" (Date.fromPosix state.zone viewDate |> Date.format "dd MMM YYYY")
 
-        date =
-            fromPosix state.zone viewDate
-
         startOfWeek =
             YRIDate.getMonday state.zone viewDate
 
@@ -84,46 +82,23 @@ viewControls state viewDate =
             YRIDate.getSunday state.zone viewDate
 
         dateFormat =
-            if state.mode /= Models.Month then
+            if not state.isDatepicker && state.mode /= Models.Month then
                 "dd MMM YYYY"
 
             else
                 "MMM YYYY"
 
         displayDate =
-            if state.mode == Models.Week then
+            if not state.isDatepicker && state.mode == Models.Week then
                 Date.format dateFormat (Date.fromPosix state.zone startOfWeek)
                     ++ " - "
                     ++ Date.format dateFormat (Date.fromPosix state.zone endOfWeek)
 
             else
-                Date.format dateFormat date
+                Date.format dateFormat (Date.fromPosix state.zone viewDate)
 
-        offset =
-            if state.mode /= Models.Week then
-                1
-
-            else
-                7
-
-        interval =
-            case state.mode of
-                Models.Day ->
-                    Days
-
-                Models.Week ->
-                    Days
-
-                Models.Month ->
-                    Months
-
-        nextDate =
-            Date.add interval offset date
-                |> YRIDate.dateToPosix state.zone
-
-        prevDate =
-            Date.add interval -offset date
-                |> YRIDate.dateToPosix state.zone
+        ( prevDate, nextDate ) =
+            getNextPrevDates state viewDate
     in
     div
         [ class "yri-calendar__controls"
@@ -134,14 +109,14 @@ viewControls state viewDate =
             ]
         ]
         [ Button.view
-            [ onClick (Msgs.UpdateDate CalendarViewDate prevDate)
+            [ onClick (Msgs.UpdateCalendarViewDate state.isDatepicker prevDate)
             ]
             [ text "prev" ]
         , div
             [ class "yri-calendar__month-text" ]
             [ text displayDate ]
         , Button.view
-            [ onClick (Msgs.UpdateDate CalendarViewDate nextDate)
+            [ onClick (Msgs.UpdateCalendarViewDate state.isDatepicker nextDate)
             ]
             [ text "next" ]
         ]
@@ -219,13 +194,13 @@ viewCalendarWeek state data squares =
                 |> Time.millisToPosix
 
         fullWeekOfSquares =
-            if isWeekView then
+            if not state.isDatepicker && isWeekView then
                 YRIDate.getWeekForPosix state.zone aDateInTheWeek
 
             else
                 squares ++ populateArrayForDummies (7 - len)
     in
-    if not isWeekView || isActive then
+    if not isWeekView || state.isDatepicker || isActive then
         tr
             [ class "yri-calendar__week yri-week"
             , classList [ ( "yri-week--active", isActive ) ]
@@ -269,7 +244,7 @@ viewDay state data millis =
             padding2 (px 0) (em 0.33)
 
         showMonth =
-            state.mode == Models.Week
+            not state.isDatepicker && state.mode == Models.Week
 
         numDisplay =
             [ text
@@ -386,3 +361,42 @@ populateArrayForDummies len =
 
     else
         List.map (\x -> 0) (List.range 1 len)
+
+
+getNextPrevDates : CalendarState -> Time.Posix -> ( Time.Posix, Time.Posix )
+getNextPrevDates state viewDate =
+    let
+        offset =
+            if state.isDatepicker || state.mode /= Models.Week then
+                1
+
+            else
+                7
+
+        interval =
+            if state.isDatepicker then
+                Months
+
+            else
+                case state.mode of
+                    Models.Day ->
+                        Days
+
+                    Models.Week ->
+                        Days
+
+                    Models.Month ->
+                        Months
+
+        date =
+            Date.fromPosix state.zone viewDate
+
+        nextDate =
+            Date.add interval offset date
+                |> YRIDate.dateToPosix state.zone
+
+        prevDate =
+            Date.add interval -offset date
+                |> YRIDate.dateToPosix state.zone
+    in
+    ( prevDate, nextDate )

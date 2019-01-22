@@ -1,6 +1,7 @@
 module View exposing (view)
 
 import Components.Calendar as Calendar
+import Components.Form as Form
 import Components.RadioButton as RadioButton
 import Css exposing (..)
 import Html
@@ -19,6 +20,7 @@ view model =
             { zone = model.zone
             , mode = model.calendarMode
             , isDatepicker = False
+            , isOpen = False
             }
 
         calendarData =
@@ -49,6 +51,6 @@ view model =
                     ]
 
                 else
-                    [ div [] [ text "Form Placeholder" ] ]
+                    [ Form.view model ]
                )
         )
