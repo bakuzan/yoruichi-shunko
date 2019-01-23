@@ -1,20 +1,25 @@
 const gql = require('graphql-tag');
 
 const { mapArrToGraphqlString } = require('../utils');
-const { RepeatPattern } = require('../constants/enums');
+const { RepeatPattern, CalendarMode } = require('../constants/enums');
 
 const Enums = [
   gql`
   enum RepeatPattern {
     ${mapArrToGraphqlString(RepeatPattern)}
-  }
-`
+  }`,
+  gql`
+  enum CalendarMode {
+    ${mapArrToGraphqlString(CalendarMode)}
+  }`
 ];
 
 const Query = gql`
   type Query {
     todoTemplates: [TodoTemplate]
     todoInstances: [TodoInstance]
+
+    calendarView(mode: CalendarMode!, date: Date!): [TodoInstance]
   }
 `;
 
@@ -58,10 +63,6 @@ const Todo = gql`
 
 const CustomTypes = gql`
   scalar Date
-
-  type MyType {
-    created: Date
-  }
 
   type DeleteReponse {
     success: Boolean
