@@ -39,6 +39,7 @@ type alias Todo =
     { id : Int
     , name : String
     , date : Int -- Date in millis
+    , isRepeated : Bool
     }
 
 
