@@ -1,4 +1,4 @@
-module Utils.Constants exposing (calendarModeOptions, repeatPatternOptions)
+module Utils.Constants exposing (calendarModeOptions, closeKeys, repeatPatternOptions)
 
 import Components.RadioButton exposing (RadioOption)
 import Msgs
@@ -32,4 +32,25 @@ repeatPatternOptions =
     , ( "Monthly", "Monthly" )
     , ( "Quarterly", "Quarterly" )
     , ( "Yearly", "Yearly" )
+    ]
+
+
+
+-- Key Codes
+
+
+enterKey : Int
+enterKey =
+    13
+
+
+escapeKey : Int
+escapeKey =
+    27
+
+
+closeKeys : List Int
+closeKeys =
+    [ enterKey
+    , escapeKey
     ]

@@ -48,6 +48,9 @@ update msg model =
         Msgs.OpenDatepicker selected ->
             ( { model | displayDatepicker = True, calendarViewDate = selected }, Cmd.none )
 
+        Msgs.CloseDatepicker ->
+            ( { model | displayDatepicker = False, calendarViewDate = model.today }, Cmd.none )
+
         -- Todo Form Handling
         Msgs.DisplayTodoForm posix ->
             ( { model

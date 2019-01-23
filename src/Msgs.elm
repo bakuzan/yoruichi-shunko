@@ -18,3 +18,4 @@ type Msg
     | UpdateDateInput YRIDateProperty String
     | UpdateSelectBox String String
     | OpenDatepicker Time.Posix
+    | CloseDatepicker

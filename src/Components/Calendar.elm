@@ -34,13 +34,29 @@ type alias CalendarData =
 
 view : CalendarState -> CalendarData -> Html Msg
 view state data =
+    let
+        datepickerCss =
+            if not state.isDatepicker then
+                [ width (pct 100) ]
+
+            else
+                [ position absolute
+                , bottom (px 0)
+                , left (px 0)
+                , transform (translateY (pct 100))
+                ]
+    in
     div
         [ class "yri-calendar"
         , css
-            [ displayFlex
-            , flexDirection column
-            , padding (em 0.33)
-            ]
+            ([ displayFlex
+             , flexDirection column
+             , padding (em 0.33)
+             , zIndex (int 10)
+             , boxSizing borderBox
+             ]
+                ++ datepickerCss
+            )
         ]
         [ viewControls state data.view
         , if state.isDatepicker || state.mode /= Models.Day then
@@ -99,26 +115,42 @@ viewControls state viewDate =
 
         ( prevDate, nextDate ) =
             getNextPrevDates state viewDate
+
+        btnCss =
+            [ padding2 (em 0.2) (em 1)
+            , before
+                [ property "content" "attr(icon)"
+                ]
+            ]
     in
     div
         [ class "yri-calendar__controls"
         , css
             [ displayFlex
-            , justifyContent spaceAround
+            , justifyContent spaceBetween
+            , alignItems center
             , padding (em 0.33)
             ]
         ]
         [ Button.view
-            [ onClick (Msgs.UpdateCalendarViewDate state.isDatepicker prevDate)
+            [ css btnCss
+            , class "yri-calendar__shift-button button-icon"
+            , Common.setCustomAttr "aria-label" "Previous"
+            , Common.setCustomAttr "icon" "‹"
+            , onClick (Msgs.UpdateCalendarViewDate state.isDatepicker prevDate)
             ]
-            [ text "prev" ]
+            []
         , div
             [ class "yri-calendar__month-text" ]
             [ text displayDate ]
         , Button.view
-            [ onClick (Msgs.UpdateCalendarViewDate state.isDatepicker nextDate)
+            [ css btnCss
+            , class "yri-calendar__shift-button"
+            , Common.setCustomAttr "aria-label" "Next"
+            , Common.setCustomAttr "icon" "›"
+            , onClick (Msgs.UpdateCalendarViewDate state.isDatepicker nextDate)
             ]
-            [ text "next" ]
+            []
         ]
 
 
@@ -241,7 +273,7 @@ viewDay state data millis =
                 [ width (em 3), height (em 3) ]
 
         dayPadding =
-            padding2 (px 0) (em 0.33)
+            padding2 (px 0.66) (em 0.33)
 
         showMonth =
             not state.isDatepicker && state.mode == Models.Week
@@ -256,7 +288,7 @@ viewDay state data millis =
                         String.fromInt (asDate |> Date.day)
 
                  else
-                    ""
+                    " "
                 )
             ]
     in
@@ -286,7 +318,11 @@ viewDay state data millis =
 
           else
             Button.view
-                [ css [ dayPadding ]
+                [ css
+                    [ dayPadding
+                    , width (pct 100)
+                    , height (pct 100)
+                    ]
                 , disabled isDummy
                 , onClick (Msgs.UpdateDate data.selectedType asPosix)
                 ]
@@ -299,7 +335,9 @@ viewDay state data millis =
                     , paddingBottom (em 0.33)
                     ]
                 ]
-                [ ul [ class "list column one" ] []
+                [ ul
+                    [ class "list column one" ]
+                    []
                 , div
                     [ css
                         [ displayFlex
