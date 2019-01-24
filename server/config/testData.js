@@ -42,8 +42,7 @@ const instances = [
   {
     name: 'go to mk',
     date: isoDate('2019-01-23'),
-    todoTemplateId: 1,
-    isRepeated: false
+    todoTemplateId: 1
   },
   ...Array(14)
     .fill(null)
@@ -51,8 +50,7 @@ const instances = [
       return {
         name: 'perform repeated task',
         date: isoDatePlusDays('2019-01-23', i),
-        todoTemplateId: 2,
-        isRepeated: true
+        todoTemplateId: 2
       };
     }),
   ...Array(12)
@@ -61,8 +59,7 @@ const instances = [
       return {
         name: 'watch tv show',
         date: isoDatePlusDays('2019-01-21', i * 7),
-        todoTemplateId: 3,
-        isRepeated: true
+        todoTemplateId: 3
       };
     }),
   ...Array(8)
@@ -71,8 +68,7 @@ const instances = [
       return {
         name: 'shave',
         date: isoDatePlusDays('2018-12-30', i * 7 * 13),
-        todoTemplateId: 4,
-        isRepeated: true
+        todoTemplateId: 4
       };
     })
 ];

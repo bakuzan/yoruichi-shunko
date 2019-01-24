@@ -42,6 +42,10 @@ function getLastDateOfMonth(date) {
 }
 
 module.exports = (mode, date) => {
+  if (new Date(date) == 'Invalid Date') {
+    throw new Error('Invalid Date Query Parameter');
+  }
+
   switch (mode) {
     case CalendarModes.Day:
       return [startOfDay(date), endOfDay(date)];

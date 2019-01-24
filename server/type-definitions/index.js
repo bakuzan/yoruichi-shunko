@@ -19,7 +19,7 @@ const Query = gql`
     todoTemplates: [TodoTemplate]
     todoInstances: [TodoInstance]
 
-    calendarView(mode: CalendarMode!, date: Date!): [TodoInstance]
+    calendarView(mode: CalendarMode!, date: String!): [TodoInstance]
   }
 `;
 
@@ -35,7 +35,6 @@ const Todo = gql`
     id: Int!
     name: String
     date: Date
-    dateStr: String
     repeatPattern: RepeatPattern
     repeatFor: Int
     repeatWeekDefinition: Int
@@ -54,7 +53,6 @@ const Todo = gql`
     id: Int
     name: String
     date: Date
-    dateStr: String
     isRepeated: Boolean
     todoTemplateId: Int
     template: TodoTemplate

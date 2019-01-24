@@ -1,6 +1,7 @@
 module Msgs exposing (Msg(..))
 
-import Models exposing (YRIDateProperty)
+import GraphQL.Client.Http as GraphQLClient
+import Models exposing (Todo, YRIDateProperty)
 import Time
 
 
@@ -19,3 +20,4 @@ type Msg
     | UpdateSelectBox String String
     | OpenDatepicker Time.Posix
     | CloseDatepicker
+    | ReceiveCalendarViewResponse (Result GraphQLClient.Error (List Todo))

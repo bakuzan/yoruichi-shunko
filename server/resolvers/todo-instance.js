@@ -1,9 +1,14 @@
+const { RepeatPatterns } = require('../constants/enums');
+
 module.exports = {
-  date(instance) {
-    return new Date(instance.date).getTime();
-  },
-  dateStr(instance) {
-    return new Date(instance.date).toISOString();
+  isRepeated(instance) {
+    if (instance.todoTemplate) {
+      return instance.todoTemplate.repeatPattern !== RepeatPatterns.None;
+    }
+
+    return instance
+      .getTodoTemplate()
+      .then((template) => template.repeatPattern !== RepeatPatterns.None);
   },
   template(instance) {
     if (instance.todoTemplate) {

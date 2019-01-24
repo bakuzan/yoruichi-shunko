@@ -1,5 +1,6 @@
 module Update exposing (update)
 
+import Commands
 import Date
 import Models exposing (Model, todoFormDefaults)
 import Msgs exposing (Msg)
@@ -21,10 +22,18 @@ update msg model =
                 mode =
                     Common.stringToCalendarMode modeStr
             in
-            ( { model | calendarMode = mode }, Cmd.none )
+            ( { model | calendarMode = mode }, Commands.calendarViewRequest mode model.zone model.calendarViewDate )
 
         Msgs.UpdateCalendarViewDate isPicker posix ->
-            ( { model | calendarViewDate = posix }, Cmd.none )
+            let
+                sendCmd =
+                    if isPicker then
+                        Cmd.none
+
+                    else
+                        Commands.calendarViewRequest model.calendarMode model.zone posix
+            in
+            ( { model | calendarViewDate = posix }, sendCmd )
 
         Msgs.UpdateDate prop posix ->
             let
@@ -160,6 +169,18 @@ update msg model =
             in
             ( updatedModel, Cmd.none )
 
+        -- Receive Query Responses
+        Msgs.ReceiveCalendarViewResponse response ->
+            let
+                todos =
+                    Result.withDefault [] response
+            in
+            ( { model
+                | todos = todos
+              }
+            , Cmd.none
+            )
+
         -- Time basics
         Msgs.Zone zone ->
             ( { model | zone = zone }, Task.perform Msgs.NewTime Time.now )
@@ -169,7 +190,7 @@ update msg model =
                 | today = posix
                 , calendarViewDate = posix
               }
-            , Cmd.none
+            , Commands.calendarViewRequest model.calendarMode model.zone posix
             )
 
         _ ->

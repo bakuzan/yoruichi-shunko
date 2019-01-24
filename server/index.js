@@ -12,8 +12,10 @@ const typeDefs = require('./type-definitions');
 const resolvers = require('./resolvers');
 const context = require('./context');
 
+const GRAPHQL_PATH = '/yri/graphql';
 const app = express();
 const server = new ApolloServer({
+  graphqlPath: GRAPHQL_PATH,
   typeDefs,
   resolvers,
   context: () => ({ ...context }),
@@ -45,7 +47,7 @@ app.use(function(req, _, next) {
   next();
 });
 
-app.use('/graphql', cors(corsOptions), bodyParser.json());
+app.use(GRAPHQL_PATH, cors(corsOptions), bodyParser.json());
 
 // Start the server
 const PORT =

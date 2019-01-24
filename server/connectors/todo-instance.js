@@ -5,11 +5,6 @@ module.exports = (db, Types) => {
       type: Types.DATE,
       defaultValue: new Date().toISOString(),
       allowNull: false
-    },
-    isRepeated: {
-      type: Types.BOOLEAN,
-      defaultValue: false,
-      allowNull: false
     }
   });
 };

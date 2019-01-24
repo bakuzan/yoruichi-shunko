@@ -1,4 +1,4 @@
-module Models exposing (CalendarMode(..), Model, Todo, TodoForm, YRIDateProperty(..), initialModel, todoFormDefaults)
+module Models exposing (CalendarMode(..), Model, Todo, TodoTemplate, YRIDateProperty(..), initialModel, todoFormDefaults)
 
 import Time
 
@@ -13,8 +13,9 @@ type alias Model =
     , zone : Time.Zone
     , calendarViewDate : Time.Posix
     , displayForm : Bool
-    , todoForm : TodoForm
+    , todoForm : TodoTemplate
     , displayDatepicker : Bool
+    , todos : List Todo
     }
 
 
@@ -27,23 +28,24 @@ initialModel =
     , displayForm = False
     , todoForm = todoFormDefaults
     , displayDatepicker = False
+    , todos = []
     }
 
 
 
 -- Task Model
--- TODO fill in todo model
 
 
 type alias Todo =
     { id : Int
     , name : String
-    , date : Int -- Date in millis
+    , date : String -- Int -- Date in millis
     , isRepeated : Bool
+    , todoTemplateId : Int
     }
 
 
-type alias TodoForm =
+type alias TodoTemplate =
     { id : Int
     , name : String
     , date : Time.Posix
@@ -53,9 +55,9 @@ type alias TodoForm =
     }
 
 
-todoFormDefaults : TodoForm
+todoFormDefaults : TodoTemplate
 todoFormDefaults =
-    TodoForm 0 "" (Time.millisToPosix 0) "None" 1 1
+    TodoTemplate 0 "" (Time.millisToPosix 0) "None" 1 1
 
 
 

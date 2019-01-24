@@ -30,7 +30,8 @@ module.exports = {
             [Op.gte]: fromDate
           }
         },
-        order
+        order,
+        include: [TodoTemplate]
       });
     }
   },
