@@ -1,4 +1,4 @@
-module Models exposing (CalendarMode(..), Model, Todo, TodoTemplate, YRIDateProperty(..), initialModel, todoFormDefaults)
+module Models exposing (CalendarMode(..), Model, Todo, TodoTemplate, Todos, YRIDateProperty(..), initialModel, todoFormDefaults)
 
 import Time
 
@@ -15,7 +15,7 @@ type alias Model =
     , displayForm : Bool
     , todoForm : TodoTemplate
     , displayDatepicker : Bool
-    , todos : List Todo
+    , todos : Todos
     }
 
 
@@ -43,6 +43,10 @@ type alias Todo =
     , isRepeated : Bool
     , todoTemplateId : Int
     }
+
+
+type alias Todos =
+    List Todo
 
 
 type alias TodoTemplate =

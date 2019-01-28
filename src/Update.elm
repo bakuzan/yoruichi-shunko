@@ -21,8 +21,11 @@ update msg model =
             let
                 mode =
                     Common.stringToCalendarMode modeStr
+
+                cmd =
+                    Commands.calendarViewRequest mode model.zone model.calendarViewDate
             in
-            ( { model | calendarMode = mode }, Commands.calendarViewRequest mode model.zone model.calendarViewDate )
+            ( { model | calendarMode = mode }, cmd )
 
         Msgs.UpdateCalendarViewDate isPicker posix ->
             let

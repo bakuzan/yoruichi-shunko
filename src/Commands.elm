@@ -16,7 +16,14 @@ import Time
 
 sendGraphqlQueryRequest : GraphQLBuilder.Request GraphQLBuilder.Query a -> Task GraphQLClient.Error a
 sendGraphqlQueryRequest request =
-    GraphQLClient.sendQuery "/yri/graphql" request
+    GraphQLClient.customSendQuery
+        { method = "POST"
+        , headers = []
+        , url = "/yri/graphql"
+        , timeout = Nothing
+        , withCredentials = False
+        }
+        request
 
 
 
@@ -30,8 +37,5 @@ calendarViewRequest mode zone posix =
             Date.fromPosix zone posix
                 |> Date.format "YYYY-MM-DD"
     in
-    sendGraphqlQueryRequest
-        (Queries.calendarView zone
-            |> GraphQLBuilder.request { mode = mode, date = date }
-        )
+    sendGraphqlQueryRequest (GraphQLBuilder.request { mode = mode, date = date } Queries.calendarView)
         |> Task.attempt Msgs.ReceiveCalendarViewResponse

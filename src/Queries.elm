@@ -5,14 +5,14 @@ import GraphQL.Request.Builder exposing (..)
 import GraphQL.Request.Builder.Arg as Arg
 import GraphQL.Request.Builder.Variable as Var
 import Json.Decode as Decode
-import Models exposing (CalendarMode, Todo, TodoTemplate)
+import Models exposing (CalendarMode, Todo, TodoTemplate, Todos)
 import Time
 import Utils.Common as Common
 import Utils.Date as YRIDate
 
 
-calendarView : Time.Zone -> Document Query (List Todo) { vars | mode : CalendarMode, date : String }
-calendarView zone =
+calendarView : Document Query Todos { vars | mode : CalendarMode, date : String }
+calendarView =
     let
         calendarModeVar =
             Var.required "mode" .mode (Var.enum "CalendarMode" Common.calendarModeToString)
@@ -25,7 +25,6 @@ calendarView zone =
                 |> with (field "id" [] int)
                 |> with (field "name" [] string)
                 |> with (field "date" [] string)
-                --(date zone))
                 |> with (field "isRepeated" [] bool)
                 |> with (field "todoTemplateId" [] int)
 
