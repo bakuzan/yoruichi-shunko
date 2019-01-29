@@ -4,7 +4,7 @@ import Components.Button as Button
 import Css exposing (..)
 import Css.Global
 import Date exposing (Unit(..), add, fromPosix)
-import Html.Styled exposing (Html, button, div, table, tbody, td, text, th, thead, tr, ul)
+import Html.Styled exposing (Html, button, div, li, table, tbody, td, text, th, thead, tr, ul)
 import Html.Styled.Attributes exposing (class, classList, css, disabled)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (CalendarMode, Model, Todo, YRIDateProperty(..))
@@ -45,14 +45,19 @@ view state data =
                 , left (px 0)
                 , transform (translateY (pct 100))
                 ]
+
+        tableStyle =
+            [ tableLayout fixed
+            , width (pct 100)
+            ]
     in
     div
         [ class "yri-calendar"
         , css
             ([ displayFlex
              , flexDirection column
-             , padding (em 0.33)
-             , zIndex (int 10)
+             , padding (px 5)
+             , zIndex (int 25)
              , boxSizing borderBox
              ]
                 ++ datepickerCss
@@ -61,14 +66,14 @@ view state data =
         [ viewControls state data.view
         , if state.isDatepicker || state.mode /= Models.Day then
             table
-                [ class "yri-calendar__table" ]
+                [ class "yri-calendar__table", css tableStyle ]
                 [ viewDayNameHeader state
                 , viewCalendarBody state data
                 ]
 
           else
             table
-                [ class "yri-calendar__table" ]
+                [ class "yri-calendar__table", css tableStyle ]
                 [ thead []
                     [ tr []
                         [ th []
@@ -117,7 +122,7 @@ viewControls state viewDate =
             getNextPrevDates state viewDate
 
         btnCss =
-            [ padding2 (em 0.2) (em 1)
+            [ padding2 (px 2) (px 16)
             , before
                 [ property "content" "attr(icon)"
                 ]
@@ -129,7 +134,7 @@ viewControls state viewDate =
             [ displayFlex
             , justifyContent spaceBetween
             , alignItems center
-            , padding (em 0.33)
+            , padding (px 5)
             ]
         ]
         [ Button.view
@@ -171,7 +176,7 @@ viewDayNameHeader state =
                 [ textAlign left ]
 
         viewHeaderCell day =
-            th [ css ([ padding2 (px 0) (em 0.33) ] ++ cssForTh) ]
+            th [ css ([ padding2 (px 0) (px 5) ] ++ cssForTh) ]
                 [ text (Date.format "EE" day)
                 ]
     in
@@ -270,10 +275,10 @@ viewDay state data millis =
                 [ textAlign center, verticalAlign middle ]
 
             else
-                [ width (em 3), height (em 3) ]
+                [ position relative, verticalAlign baseline ]
 
         dayPadding =
-            padding2 (px 0.66) (em 0.33)
+            padding2 (px 10) (px 5)
 
         showMonth =
             not state.isDatepicker && state.mode == Models.Week
@@ -291,6 +296,9 @@ viewDay state data millis =
                     " "
                 )
             ]
+
+        todosForToday =
+            List.filter (\t -> t.date == millis) data.records
     in
     td
         [ css
@@ -314,7 +322,12 @@ viewDay state data millis =
             text ""
 
           else if not state.isDatepicker then
-            div [ css [ dayPadding ] ] numDisplay
+            div
+                [ css
+                    [ dayPadding
+                    ]
+                ]
+                numDisplay
 
           else
             Button.view
@@ -332,20 +345,34 @@ viewDay state data millis =
                 [ class "yri-day__content"
                 , css
                     [ dayPadding
-                    , paddingBottom (em 0.33)
+                    , paddingBottom (px 5)
                     ]
                 ]
                 [ ul
-                    [ class "list column one" ]
-                    []
+                    [ class "list column one"
+                    , css
+                        [ listStyleType none
+                        , padding (px 5)
+                        , paddingBottom (px 25)
+                        , margin2 (px 8) (px 0)
+                        ]
+                    ]
+                    ([] ++ List.map viewTodo todosForToday)
                 , div
                     [ css
                         [ displayFlex
                         , justifyContent flexEnd
+                        , position absolute
+                        , bottom (px 0)
+                        , left (px 0)
+                        , right (px 0)
+                        , padding (px 2)
                         ]
                     ]
                     [ Button.viewLink
-                        [ css [ visibility hidden ]
+                        [ css
+                            [ visibility hidden
+                            ]
                         , onClick (Msgs.DisplayTodoForm asPosix)
                         ]
                         [ text "Add" ]
@@ -354,6 +381,14 @@ viewDay state data millis =
 
           else
             text ""
+        ]
+
+
+viewTodo : Todo -> Html Msg
+viewTodo todo =
+    li [ class "list__item todo", css [ padding2 (px 5) (px 0) ] ]
+        [ div [] [ text todo.name ]
+        , div [] []
         ]
 
 

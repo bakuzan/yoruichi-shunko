@@ -15,12 +15,14 @@ const context = require('./context');
 const GRAPHQL_PATH = '/yri/graphql';
 const app = express();
 const server = new ApolloServer({
-  graphqlPath: GRAPHQL_PATH,
   typeDefs,
   resolvers,
   context: () => ({ ...context }),
   playground: {
     settings: {
+      'editor.cursorShape': 'block',
+      'editor.fontSize': 16,
+      'editor.fontFamily': '"Lucida Console", Consolas, monospace',
       'editor.theme': 'light'
     }
   },
@@ -55,7 +57,7 @@ const PORT =
     ? process.env.PORT
     : process.env.SERVER_PORT) || 9933;
 
-server.applyMiddleware({ app });
+server.applyMiddleware({ app, path: GRAPHQL_PATH });
 
 app.listen(PORT, () => {
   console.log(

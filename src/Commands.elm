@@ -22,7 +22,6 @@ sendGraphqlQueryRequest request =
         decoder =
             GraphQLBuilder.responseDataDecoder request
                 |> Decode.field "data"
-                |> Decode.field "errors"
 
         options =
             { method = "POST"
@@ -52,17 +51,17 @@ sendGraphqlQueryRequest request =
 -- Queries
 
 
-calendarViewRequest : CalendarMode -> String -> GraphQLBuilder.Request GraphQLBuilder.Query Todos
-calendarViewRequest mode date =
-    GraphQLBuilder.request { mode = mode, date = date } Queries.calendarView
+calendarViewRequest : CalendarMode -> Time.Zone -> Time.Posix -> GraphQLBuilder.Request GraphQLBuilder.Query Todos
+calendarViewRequest mode zone posix =
+    let
+        date =
+            Date.fromPosix zone posix
+                |> Date.format "YYYY-MM-dd"
+    in
+    GraphQLBuilder.request { mode = mode, date = date } (Queries.calendarView zone)
 
 
 sendCalendarViewRequest : CalendarMode -> Time.Zone -> Time.Posix -> Cmd Msg
 sendCalendarViewRequest mode zone posix =
-    let
-        date =
-            Date.fromPosix zone posix
-                |> Date.format "YYYY-MM-DD"
-    in
-    sendGraphqlQueryRequest (calendarViewRequest mode date)
+    sendGraphqlQueryRequest (calendarViewRequest mode zone posix)
         |> Task.attempt Msgs.ReceiveCalendarViewResponse

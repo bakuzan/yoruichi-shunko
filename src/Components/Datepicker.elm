@@ -32,7 +32,8 @@ view state data attrs =
             []
          ]
             ++ (if state.isOpen then
-                    [ div
+                    [ Calendar.view state data
+                    , div
                         [ css
                             [ position fixed
                             , top (px 0)
@@ -47,7 +48,6 @@ view state data attrs =
                         , onKeyDown Constants.closeKeys Msgs.CloseDatepicker
                         ]
                         []
-                    , Calendar.view state data
                     ]
 
                 else

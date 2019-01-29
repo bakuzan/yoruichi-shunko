@@ -41,7 +41,7 @@ initialModel =
 type alias Todo =
     { id : Int
     , name : String
-    , date : String -- Int -- Date in millis
+    , date : Int -- Int -- Date in millis
     , isRepeated : Bool
     , todoTemplateId : Int
     }

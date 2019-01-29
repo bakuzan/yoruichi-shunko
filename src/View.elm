@@ -28,7 +28,7 @@ view model =
             , view = model.calendarViewDate
             , selected = model.calendarViewDate
             , selectedType = Ignored
-            , records = []
+            , records = model.todos
             }
 
         calendarMode =

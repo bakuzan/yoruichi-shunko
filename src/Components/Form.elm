@@ -27,7 +27,7 @@ view model =
             Date.fromPosix model.zone values.date
 
         dateStr =
-            Date.format "YYYY-MM-DD" date
+            Date.format "YYYY-MM-dd" date
 
         dpState =
             { zone = model.zone
