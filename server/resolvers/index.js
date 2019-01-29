@@ -1,5 +1,5 @@
 const Op = require('sequelize').Op;
-const { TodoInstance, TodoTemplate } = require('../connectors');
+const { db, TodoInstance, TodoTemplate } = require('../connectors');
 
 const TodoTemplateResolvers = require('./todo-template');
 const TodoInstanceResolvers = require('./todo-instance');
@@ -7,6 +7,7 @@ const GraphqlDate = require('./graphql-date');
 
 const getDateRangeForCalendarMode = require('../utils/date-range');
 const handleDeleteResponse = require('../utils/delete-response');
+const generateTodoInstances = require('../utils/generate-instances');
 
 module.exports = {
   Query: {
@@ -15,8 +16,17 @@ module.exports = {
         order: [['date', 'DESC']]
       });
     },
-    todoInstances() {
+    todoInstances(_, { todoTemplateId }) {
+      const filter = todoTemplateId
+        ? {
+            where: {
+              todoTemplateId
+            }
+          }
+        : {};
+
       return TodoInstance.findAll({
+        ...filter,
         order: [['date', 'DESC']]
       });
     },
@@ -36,6 +46,19 @@ module.exports = {
     }
   },
   Mutation: {
+    async todoCreate(_, { template }) {
+      const todoInstances = generateTodoInstances(template);
+
+      return await TodoTemplate.create(
+        {
+          ...template,
+          todoInstances
+        },
+        { include: [TodoInstance] }
+      )
+        .then(() => ({ success: true, errorMessages: [] }))
+        .catch((error) => ({ success: false, errorMessages: [error.message] }));
+    },
     async todoTemplateRemove(_, { id }) {
       const deletedCount = await TodoTemplate.destroy({ where: { id } });
       return handleDeleteResponse(id, deletedCount);

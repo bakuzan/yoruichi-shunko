@@ -83,6 +83,17 @@ update msg model =
         Msgs.SubmitTodoForm ->
             let
                 -- TODO handle submission
+                isCreate =
+                    model.todoForm.id == 0
+
+                submitCmd =
+                    Cmd.none
+                    -- if isCreate then
+                    --     Commands.sendTodoCreateRequest
+
+                    -- else
+                    --     Commands.sendTodoUpdateRequest
+
                 logger =
                     Debug.log "Submitted Form! - Not Implemented Yet" model.todoForm
             in
@@ -90,7 +101,7 @@ update msg model =
                 | displayForm = False
                 , todoForm = todoFormDefaults
               }
-            , Cmd.none
+            , submitCmd
             )
 
         -- Form inputs
@@ -192,7 +203,7 @@ update msg model =
                             let
                                 reslogger =
                                     Debug.log "Calendar View Response => " response
-                                    
+
                                 logger =
                                     Debug.log "Calendar View Error => " error
                             in

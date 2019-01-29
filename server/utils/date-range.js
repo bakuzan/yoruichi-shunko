@@ -1,4 +1,5 @@
 const { CalendarModes } = require('../constants/enums');
+const { getFirstDateOfMonth, getLastDateOfMonth } = require('./index');
 
 function setTime(date, h, m, s, n) {
   const d = new Date(date);
@@ -27,19 +28,6 @@ function getWeekExtreme(check, setTime) {
 
 const weekBeginning = getWeekExtreme((d) => (d === 0 ? -6 : 1), startOfDay);
 const weekEnding = getWeekExtreme((d) => (d === 0 ? 0 : 7), endOfDay);
-
-// Month Helpers
-
-function getFirstDateOfMonth(date) {
-  const d = new Date(date);
-  d.setDate(1);
-  return d;
-}
-
-function getLastDateOfMonth(date) {
-  const d = new Date(date);
-  return new Date(d.getFullYear(), d.getMonth() + 1, 0);
-}
 
 module.exports = (mode, date) => {
   if (new Date(date) == 'Invalid Date') {

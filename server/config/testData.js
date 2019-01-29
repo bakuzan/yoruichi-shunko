@@ -1,12 +1,4 @@
-function isoDate(d) {
-  return new Date(d).toISOString();
-}
-
-function isoDatePlusDays(date, days) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + days);
-  return isoDate(d);
-}
+const { isoDate, isoDatePlusDays } = require('../utils');
 
 const templates = [
   {

@@ -17,7 +17,7 @@ const Enums = [
 const Query = gql`
   type Query {
     todoTemplates: [TodoTemplate]
-    todoInstances: [TodoInstance]
+    todoInstances(todoTemplateId: Int): [TodoInstance]
 
     calendarView(mode: CalendarMode!, date: String!): [TodoInstance]
   }
@@ -25,8 +25,10 @@ const Query = gql`
 
 const Mutation = gql`
   type Mutation {
-    todoTemplateRemove(id: Int!): DeleteReponse
-    todoInstanceRemove(id: Int!): DeleteReponse
+    todoCreate(template: TodoTemplateInput): YRIReponse
+
+    todoTemplateRemove(id: Int!): YRIReponse
+    todoInstanceRemove(id: Int!): YRIReponse
   }
 `;
 
@@ -62,7 +64,7 @@ const Todo = gql`
 const CustomTypes = gql`
   scalar Date
 
-  type DeleteReponse {
+  type YRIReponse {
     success: Boolean
     errorMessages: [String]
   }
