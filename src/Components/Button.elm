@@ -15,4 +15,6 @@ view attrs children =
 
 viewLink : List (Html.Styled.Attribute msg) -> List (Html.Styled.Html msg) -> Html.Styled.Html msg
 viewLink attrs children =
-    view ([ class "button-link", type_ "button" ] ++ attrs) children
+    button
+        ([ class "yri-button button-link", type_ "button" ] ++ attrs)
+        children
