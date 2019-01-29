@@ -1,4 +1,4 @@
-module Models exposing (CalendarMode(..), Model, Todo, TodoTemplate, Todos, YRIDateProperty(..), initialModel, todoFormDefaults)
+module Models exposing (CalendarMode(..), CalendarViewResponse, Model, Todo, TodoTemplate, Todos, YRIDateProperty(..), initialModel, todoFormDefaults)
 
 import Time
 
@@ -16,6 +16,7 @@ type alias Model =
     , todoForm : TodoTemplate
     , displayDatepicker : Bool
     , todos : Todos
+    , errorMessage : String
     }
 
 
@@ -29,6 +30,7 @@ initialModel =
     , todoForm = todoFormDefaults
     , displayDatepicker = False
     , todos = []
+    , errorMessage = ""
     }
 
 
@@ -62,6 +64,12 @@ type alias TodoTemplate =
 todoFormDefaults : TodoTemplate
 todoFormDefaults =
     TodoTemplate 0 "" (Time.millisToPosix 0) "None" 1 1
+
+
+type alias CalendarViewResponse =
+    { todos : Todos
+    , errorMessage : String
+    }
 
 
 

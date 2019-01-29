@@ -1,9 +1,11 @@
-module Commands exposing (calendarViewRequest)
+module Commands exposing (sendCalendarViewRequest)
 
 import Date
 import GraphQL.Client.Http as GraphQLClient
 import GraphQL.Request.Builder as GraphQLBuilder
-import Models exposing (CalendarMode, Todo)
+import Http
+import Json.Decode as Decode
+import Models exposing (CalendarMode, Todo, Todos)
 import Msgs exposing (Msg)
 import Queries
 import Task exposing (Task)
@@ -16,26 +18,51 @@ import Time
 
 sendGraphqlQueryRequest : GraphQLBuilder.Request GraphQLBuilder.Query a -> Task GraphQLClient.Error a
 sendGraphqlQueryRequest request =
-    GraphQLClient.customSendQuery
-        { method = "POST"
-        , headers = []
-        , url = "/yri/graphql"
-        , timeout = Nothing
-        , withCredentials = False
-        }
-        request
+    let
+        decoder =
+            GraphQLBuilder.responseDataDecoder request
+                |> Decode.field "data"
+                |> Decode.field "errors"
+
+        options =
+            { method = "POST"
+            , headers =
+                [ Http.header "Accept" "application/json"
+                ]
+            , url = "/yri/graphql"
+            , timeout = Nothing
+            , withCredentials = False
+            }
+    in
+    GraphQLClient.customSendQueryRaw options request
+        |> Task.andThen
+            (\response ->
+                case Decode.decodeString decoder response.body of
+                    Err err ->
+                        Http.BadPayload "Decode Error" response
+                            |> GraphQLClient.HttpError
+                            |> Task.fail
+
+                    Ok decodedValue ->
+                        Task.succeed decodedValue
+            )
 
 
 
 -- Queries
 
 
-calendarViewRequest : CalendarMode -> Time.Zone -> Time.Posix -> Cmd Msg
-calendarViewRequest mode zone posix =
+calendarViewRequest : CalendarMode -> String -> GraphQLBuilder.Request GraphQLBuilder.Query Todos
+calendarViewRequest mode date =
+    GraphQLBuilder.request { mode = mode, date = date } Queries.calendarView
+
+
+sendCalendarViewRequest : CalendarMode -> Time.Zone -> Time.Posix -> Cmd Msg
+sendCalendarViewRequest mode zone posix =
     let
         date =
             Date.fromPosix zone posix
                 |> Date.format "YYYY-MM-DD"
     in
-    sendGraphqlQueryRequest (GraphQLBuilder.request { mode = mode, date = date } Queries.calendarView)
+    sendGraphqlQueryRequest (calendarViewRequest mode date)
         |> Task.attempt Msgs.ReceiveCalendarViewResponse

@@ -1,4 +1,4 @@
-module Msgs exposing (Msg(..))
+module Msgs exposing (..)
 
 import GraphQL.Client.Http as GraphQLClient
 import Models exposing (Todos, YRIDateProperty)

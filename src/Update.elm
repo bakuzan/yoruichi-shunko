@@ -2,7 +2,7 @@ module Update exposing (update)
 
 import Commands
 import Date
-import Models exposing (Model, todoFormDefaults)
+import Models exposing (CalendarViewResponse, Model, todoFormDefaults)
 import Msgs exposing (Msg)
 import Task
 import Time
@@ -23,7 +23,7 @@ update msg model =
                     Common.stringToCalendarMode modeStr
 
                 cmd =
-                    Commands.calendarViewRequest mode model.zone model.calendarViewDate
+                    Commands.sendCalendarViewRequest mode model.zone model.calendarViewDate
             in
             ( { model | calendarMode = mode }, cmd )
 
@@ -34,7 +34,7 @@ update msg model =
                         Cmd.none
 
                     else
-                        Commands.calendarViewRequest model.calendarMode model.zone posix
+                        Commands.sendCalendarViewRequest model.calendarMode model.zone posix
             in
             ( { model | calendarViewDate = posix }, sendCmd )
 
@@ -175,11 +175,32 @@ update msg model =
         -- Receive Query Responses
         Msgs.ReceiveCalendarViewResponse response ->
             let
-                todos =
-                    Result.withDefault [] response
+                result : CalendarViewResponse
+                result =
+                    case response of
+                        Ok todos ->
+                            let
+                                reslogger =
+                                    Debug.log "Calendar View Response => " response
+
+                                logger =
+                                    Debug.log "Calendar View Success => " todos
+                            in
+                            { todos = todos, errorMessage = "" }
+
+                        Err error ->
+                            let
+                                reslogger =
+                                    Debug.log "Calendar View Response => " response
+                                    
+                                logger =
+                                    Debug.log "Calendar View Error => " error
+                            in
+                            { todos = [], errorMessage = "" }
             in
             ( { model
-                | todos = todos
+                | todos = result.todos
+                , errorMessage = result.errorMessage
               }
             , Cmd.none
             )
@@ -193,7 +214,7 @@ update msg model =
                 | today = posix
                 , calendarViewDate = posix
               }
-            , Commands.calendarViewRequest model.calendarMode model.zone posix
+            , Commands.sendCalendarViewRequest model.calendarMode model.zone posix
             )
 
         _ ->

@@ -1,3 +1,7 @@
+const proxy = require('http-proxy-middleware');
+
 module.exports = {
-  proxy: "http://localhost:9933"
+  setupProxy: function(app) {
+    app.use(proxy('/yri/*', { target: 'http://localhost:9933/' }));
+  }
 };
