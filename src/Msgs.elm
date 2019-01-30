@@ -1,7 +1,7 @@
-module Msgs exposing (..)
+module Msgs exposing (Msg(..))
 
 import GraphQL.Client.Http as GraphQLClient
-import Models exposing (Todos, YRIDateProperty)
+import Models exposing (Todos, YRIDateProperty, YRIResponse)
 import Time
 
 
@@ -21,3 +21,4 @@ type Msg
     | OpenDatepicker Time.Posix
     | CloseDatepicker
     | ReceiveCalendarViewResponse (Result GraphQLClient.Error Todos)
+    | ReceiveTodoCreateResponse (Result GraphQLClient.Error YRIResponse)

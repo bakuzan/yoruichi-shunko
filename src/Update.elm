@@ -2,6 +2,8 @@ module Update exposing (update)
 
 import Commands
 import Date
+import GraphQL.Client.Http as GraphqlClient
+import Http
 import Models exposing (CalendarViewResponse, Model, todoFormDefaults)
 import Msgs exposing (Msg)
 import Task
@@ -82,18 +84,17 @@ update msg model =
 
         Msgs.SubmitTodoForm ->
             let
-                -- TODO handle submission
                 isCreate =
                     model.todoForm.id == 0
 
                 submitCmd =
-                    Cmd.none
-                    -- if isCreate then
-                    --     Commands.sendTodoCreateRequest
+                    if isCreate then
+                        Commands.sendTodoCreateRequest model.zone model.todoForm
 
-                    -- else
-                    --     Commands.sendTodoUpdateRequest
+                    else
+                        Cmd.none
 
+                -- TODO handle Edit submission
                 logger =
                     Debug.log "Submitted Form! - Not Implemented Yet" model.todoForm
             in
@@ -183,31 +184,26 @@ update msg model =
             in
             ( updatedModel, Cmd.none )
 
-        -- Receive Query Responses
+        -- Receive Api Responses
         Msgs.ReceiveCalendarViewResponse response ->
             let
                 result : CalendarViewResponse
                 result =
                     case response of
                         Ok todos ->
-                            let
-                                reslogger =
-                                    Debug.log "Calendar View Response => " response
-
-                                logger =
-                                    Debug.log "Calendar View Success => " todos
-                            in
                             { todos = todos, errorMessage = "" }
 
                         Err error ->
                             let
-                                reslogger =
-                                    Debug.log "Calendar View Response => " response
-
                                 logger =
                                     Debug.log "Calendar View Error => " error
                             in
-                            { todos = [], errorMessage = "" }
+                            case error of
+                                GraphqlClient.HttpError err ->
+                                    { todos = [], errorMessage = Common.expectError err }
+
+                                _ ->
+                                    { todos = [], errorMessage = "Something went wrong fetching the calendar" }
             in
             ( { model
                 | todos = result.todos
@@ -215,6 +211,37 @@ update msg model =
               }
             , Cmd.none
             )
+
+        Msgs.ReceiveTodoCreateResponse response ->
+            let
+                newModelAndCmd =
+                    case response of
+                        Ok todos ->
+                            ( model
+                            , Commands.sendCalendarViewRequest model.calendarMode model.zone model.calendarViewDate
+                            )
+
+                        Err error ->
+                            let
+                                logger =
+                                    Debug.log "Calendar View Error => " error
+                            in
+                            case error of
+                                GraphqlClient.HttpError err ->
+                                    ( { model
+                                        | errorMessage = Common.expectError err
+                                      }
+                                    , Cmd.none
+                                    )
+
+                                _ ->
+                                    ( { model
+                                        | errorMessage = "Something went wrong fetching the calendar"
+                                      }
+                                    , Cmd.none
+                                    )
+            in
+            newModelAndCmd
 
         -- Time basics
         Msgs.Zone zone ->

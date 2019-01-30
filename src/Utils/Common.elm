@@ -1,7 +1,9 @@
-module Utils.Common exposing (calendarModeToString, repeatForMax, setCustomAttr, setRole, splitList, stringToCalendarMode)
+module Utils.Common exposing (calendarModeToString, expectError, repeatForMax, setCustomAttr, setRole, splitList, stringToCalendarMode)
 
 import Html.Styled exposing (Attribute)
 import Html.Styled.Attributes exposing (attribute)
+import Http
+import Json.Decode as D
 import Models exposing (CalendarMode(..))
 
 
@@ -82,3 +84,26 @@ repeatForMax pattern =
 
         _ ->
             0
+
+
+
+-- expecting errors
+
+
+expectError : Http.Error -> String
+expectError error =
+    case error of
+        Http.BadUrl url ->
+            "Bad Url: " ++ url
+
+        Http.Timeout ->
+            "Request timed out"
+
+        Http.NetworkError ->
+            "Network Error"
+
+        Http.BadStatus err ->
+            err.status.message
+
+        _ ->
+            "Something went wrong."

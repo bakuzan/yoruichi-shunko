@@ -1,4 +1,4 @@
-module Models exposing (CalendarMode(..), CalendarViewResponse, Model, Todo, TodoTemplate, Todos, YRIDateProperty(..), initialModel, todoFormDefaults)
+module Models exposing (CalendarMode(..), CalendarViewResponse, Model, Todo, TodoTemplate, Todos, YRIDateProperty(..), YRIResponse, initialModel, todoFormDefaults)
 
 import Time
 
@@ -69,6 +69,12 @@ todoFormDefaults =
 type alias CalendarViewResponse =
     { todos : Todos
     , errorMessage : String
+    }
+
+
+type alias YRIResponse =
+    { success : Bool
+    , errorMessages : List String
     }
 
 
