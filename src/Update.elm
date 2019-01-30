@@ -212,7 +212,7 @@ update msg model =
             , Cmd.none
             )
 
-        Msgs.ReceiveTodoCreateResponse response ->
+        Msgs.ReceiveTodoMutationResponse response ->
             let
                 newModelAndCmd =
                     case response of

@@ -16,6 +16,7 @@ const Enums = [
 
 const Query = gql`
   type Query {
+    todoTemplateById(id: Int!): TodoTemplate
     todoTemplates: [TodoTemplate]
     todoInstances(todoTemplateId: Int): [TodoInstance]
 
@@ -26,6 +27,11 @@ const Query = gql`
 const Mutation = gql`
   type Mutation {
     todoCreate(template: TodoTemplateInput): YRIReponse
+    todoUpdate(
+      todoTemplateId: Int!
+      template: TodoTemplateInput
+      isInstance: Boolean
+    ): YRIReponse
 
     todoTemplateRemove(id: Int!): YRIReponse
     todoInstanceRemove(id: Int!): YRIReponse

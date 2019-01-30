@@ -40,7 +40,7 @@ todoCreateRequest zone template =
 sendTodoCreateRequest : Time.Zone -> TodoTemplate -> Cmd Msg
 sendTodoCreateRequest zone template =
     sendGraphqlMutation (todoCreateRequest zone template)
-        |> Task.attempt Msgs.ReceiveTodoCreateResponse
+        |> Task.attempt Msgs.ReceiveTodoMutationResponse
 
 
 

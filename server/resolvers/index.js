@@ -1,5 +1,5 @@
 const Op = require('sequelize').Op;
-const { db, TodoInstance, TodoTemplate } = require('../connectors');
+const { TodoInstance, TodoTemplate } = require('../connectors');
 
 const TodoTemplateResolvers = require('./todo-template');
 const TodoInstanceResolvers = require('./todo-instance');
@@ -11,6 +11,9 @@ const generateTodoInstances = require('../utils/generate-instances');
 
 module.exports = {
   Query: {
+    todoTemplateById(_, { id }) {
+      return TodoTemplate.findByPk(id);
+    },
     todoTemplates() {
       return TodoTemplate.findAll({
         order: [['date', 'DESC']]
@@ -58,6 +61,13 @@ module.exports = {
       )
         .then(() => ({ success: true, errorMessages: [] }))
         .catch((error) => ({ success: false, errorMessages: [error.message] }));
+    },
+    async todoUpdate(_, { todoTemplateId, template, isInstance }, context) {
+      if (isInstance) {
+        return await context.updateTodoInstance(template);
+      } else {
+        return await context.updateTodoTemplate(todoTemplateId, template);
+      }
     },
     async todoTemplateRemove(_, { id }) {
       const deletedCount = await TodoTemplate.destroy({ where: { id } });

@@ -21,4 +21,4 @@ type Msg
     | OpenDatepicker Time.Posix
     | CloseDatepicker
     | ReceiveCalendarViewResponse (Result GraphQLClient.Error Todos)
-    | ReceiveTodoCreateResponse (Result GraphQLClient.Error YRIResponse)
+    | ReceiveTodoMutationResponse (Result GraphQLClient.Error YRIResponse)
