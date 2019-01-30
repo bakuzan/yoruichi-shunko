@@ -5,7 +5,7 @@ import Css exposing (..)
 import Css.Global
 import Date exposing (Unit(..), add, fromPosix)
 import Html.Styled exposing (Html, button, div, li, table, tbody, td, text, th, thead, tr, ul)
-import Html.Styled.Attributes exposing (class, classList, css, disabled)
+import Html.Styled.Attributes exposing (class, classList, css, disabled, id)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (CalendarMode, Model, Todo, YRIDateProperty(..))
 import Msgs exposing (Msg)
@@ -311,6 +311,7 @@ viewDay state data millis =
                         ]
                    ]
             )
+        , id (String.fromInt millis)
         , class "yri-week__day yri-day"
         , classList
             [ ( "yri-day--dummy", isDummy )

@@ -11,7 +11,7 @@ module.exports = {
   },
   async updateTodoTemplate(templateId, sudoTemplate) {
     return await processResolver(
-      db.transaction((transaction) => {
+      db.transaction(async (transaction) => {
         const { template, isSimpleUpdate } = await applyTemplateUpdates(
           templateId,
           sudoTemplate,

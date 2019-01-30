@@ -8,6 +8,7 @@ const GraphqlDate = require('./graphql-date');
 const getDateRangeForCalendarMode = require('../utils/date-range');
 const handleDeleteResponse = require('../utils/delete-response');
 const generateTodoInstances = require('../utils/generate-instances');
+const validateTodoTemplate = require('../utils/validate-todo-template');
 
 module.exports = {
   Query: {
@@ -50,6 +51,11 @@ module.exports = {
   },
   Mutation: {
     async todoCreate(_, { template }) {
+      const validate = validateTodoTemplate(template);
+      if (!validate.success) {
+        return validate;
+      }
+
       const todoInstances = generateTodoInstances(template);
 
       return await TodoTemplate.create(
@@ -63,6 +69,11 @@ module.exports = {
         .catch((error) => ({ success: false, errorMessages: [error.message] }));
     },
     async todoUpdate(_, { todoTemplateId, template, isInstance }, context) {
+      const validate = validateTodoTemplate(template);
+      if (!validate.success) {
+        return validate;
+      }
+
       if (isInstance) {
         return await context.updateTodoInstance(template);
       } else {

@@ -95,6 +95,7 @@ date zone =
     Decode.string
         |> Decode.andThen
             (\dateStr ->
+                -- TODO make from parts and round it!!
                 case Date.fromIsoString (String.split "T" dateStr |> List.head |> Maybe.withDefault "") of
                     Ok d ->
                         Decode.succeed (YRIDate.dateToMillis zone d)
