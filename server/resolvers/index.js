@@ -3,7 +3,7 @@ const { TodoInstance, TodoTemplate } = require('../connectors');
 
 const TodoTemplateResolvers = require('./todo-template');
 const TodoInstanceResolvers = require('./todo-instance');
-const GraphqlDate = require('./graphql-date');
+const CustomTypes = require('./custom-types');
 
 const getDateRangeForCalendarMode = require('../utils/date-range');
 const handleDeleteResponse = require('../utils/delete-response');
@@ -91,5 +91,5 @@ module.exports = {
   },
   TodoTemplate: TodoTemplateResolvers,
   TodoInstance: TodoInstanceResolvers,
-  Date: GraphqlDate
+  ...CustomTypes
 };

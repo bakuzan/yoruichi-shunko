@@ -23,7 +23,7 @@ calendarViewRequest mode zone posix =
             Date.fromPosix zone posix
                 |> Date.format "YYYY-MM-dd"
     in
-    GraphQLBuilder.request { mode = mode, date = date } (Queries.calendarView zone)
+    GraphQLBuilder.request { mode = mode, date = date } Queries.calendarView
 
 
 sendCalendarViewRequest : CalendarMode -> Time.Zone -> Time.Posix -> Cmd Msg

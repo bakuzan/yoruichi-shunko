@@ -42,6 +42,9 @@ module.exports = (mode, date) => {
       return [weekBeginning(date), weekEnding(date)];
 
     case CalendarModes.Month:
-      return [getFirstDateOfMonth(date), getLastDateOfMonth(date)];
+      return [
+        startOfDay(getFirstDateOfMonth(date)),
+        endOfDay(getLastDateOfMonth(date))
+      ];
   }
 };

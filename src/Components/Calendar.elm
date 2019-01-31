@@ -7,10 +7,10 @@ import Date exposing (Unit(..), add, fromPosix)
 import Html.Styled exposing (Html, button, div, li, table, tbody, td, text, th, thead, tr, ul)
 import Html.Styled.Attributes exposing (class, classList, css, disabled, id)
 import Html.Styled.Events exposing (onClick)
-import Models exposing (CalendarMode, Model, Todo, YRIDateProperty(..))
+import Models exposing (CalendarMode, Model, Todo, Todos, YRIDateProperty(..))
 import Msgs exposing (Msg)
 import Time exposing (Month(..))
-import Time.Extra as Time exposing (Interval(..))
+import Time.Extra as TimeE exposing (Interval(..))
 import Utils.Common as Common
 import Utils.Date as YRIDate
 
@@ -28,7 +28,7 @@ type alias CalendarData =
     , view : Time.Posix
     , selected : Time.Posix
     , selectedType : YRIDateProperty
-    , records : List Todo
+    , records : Todos
     }
 
 
@@ -298,7 +298,7 @@ viewDay state data millis =
             ]
 
         todosForToday =
-            List.filter (\t -> t.date == millis) data.records
+            filterRecords state.zone millis data.records
     in
     td
         [ css
@@ -410,17 +410,17 @@ getMonthDays zone date =
             populateArrayForDummies (startingWeekdayNum - 1)
 
         start =
-            Time.Parts (Date.year date) (Date.month date) 1 0 0 0 0
-                |> Time.partsToPosix zone
+            TimeE.Parts (Date.year date) (Date.month date) 1 0 0 0 0
+                |> TimeE.partsToPosix zone
 
         until =
-            Time.Parts (Date.year date) (Date.month date) monthLength 0 0 0 0
-                |> Time.partsToPosix zone
+            TimeE.Parts (Date.year date) (Date.month date) monthLength 0 0 0 0
+                |> TimeE.partsToPosix zone
 
         daysInMillis =
-            Time.range Day 1 zone start until
+            TimeE.range Day 1 zone start until
                 |> (\l -> l ++ [ until ])
-                |> List.map Time.posixToMillis
+                |> List.map (\p -> TimeE.floor Day zone p |> Time.posixToMillis)
 
         squares =
             dummyDays ++ daysInMillis
@@ -474,3 +474,16 @@ getNextPrevDates state viewDate =
                 |> YRIDate.dateToPosix state.zone
     in
     ( prevDate, nextDate )
+
+
+filterRecords : Time.Zone -> Int -> Todos -> Todos
+filterRecords zone millis todos =
+    List.filter
+        (\t ->
+            (Time.millisToPosix t.date
+                |> TimeE.ceiling Day zone
+                |> Time.posixToMillis
+            )
+                == millis
+        )
+        todos

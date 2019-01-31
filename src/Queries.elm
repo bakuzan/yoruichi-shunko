@@ -11,8 +11,8 @@ import Utils.Common as Common
 import Utils.Date as YRIDate
 
 
-calendarView : Time.Zone -> Document Query Todos { vars | mode : CalendarMode, date : String }
-calendarView zone =
+calendarView : Document Query Todos { vars | mode : CalendarMode, date : String }
+calendarView =
     let
         calendarModeVar =
             Var.required "mode" .mode (Var.enum "CalendarMode" Common.calendarModeToString)
@@ -24,7 +24,7 @@ calendarView zone =
             object Todo
                 |> with (field "id" [] int)
                 |> with (field "name" [] string)
-                |> with (field "date" [] (date zone))
+                |> with (field "date" [] int)
                 |> with (field "isRepeated" [] bool)
                 |> with (field "todoTemplateId" [] int)
 
@@ -83,27 +83,7 @@ templateVar zone =
 
 
 
--- Custom Graphql Types
-
-
-type DateType
-    = DateType
-
-
-date : Time.Zone -> ValueSpec NonNull DateType Int vars
-date zone =
-    Decode.string
-        |> Decode.andThen
-            (\dateStr ->
-                -- TODO make from parts and round it!!
-                case Date.fromIsoString (String.split "T" dateStr |> List.head |> Maybe.withDefault "") of
-                    Ok d ->
-                        Decode.succeed (YRIDate.dateToMillis zone d)
-
-                    Err errorMessage ->
-                        Decode.fail errorMessage
-            )
-        |> customScalar DateType
+-- Helpers
 
 
 datePost : Time.Zone -> Time.Posix -> String
