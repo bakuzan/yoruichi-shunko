@@ -1,7 +1,7 @@
 module Msgs exposing (Msg(..))
 
 import GraphQL.Client.Http as GraphQLClient
-import Models exposing (Todos, YRIDateProperty, YRIResponse)
+import Models exposing (TodoTemplate, Todos, YRIDateProperty, YRIResponse)
 import Time
 
 
@@ -20,5 +20,10 @@ type Msg
     | UpdateSelectBox String String
     | OpenDatepicker Time.Posix
     | CloseDatepicker
+    | OpenContextMenu Int
+    | CloseContextMenu
+    | DisplayTodoFormEdit
+    | PrepareToDelete
     | ReceiveCalendarViewResponse (Result GraphQLClient.Error Todos)
     | ReceiveTodoMutationResponse (Result GraphQLClient.Error YRIResponse)
+    | ReceiveTemplateResponse (Result GraphQLClient.Error TodoTemplate)

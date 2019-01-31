@@ -1,14 +1,18 @@
-module Queries exposing (calendarView, todoCreate)
+module Queries exposing (calendarView, templateById, todoCreate)
 
 import Date
 import GraphQL.Request.Builder exposing (..)
 import GraphQL.Request.Builder.Arg as Arg
 import GraphQL.Request.Builder.Variable as Var
 import Json.Decode as Decode
-import Models exposing (CalendarMode, Todo, TodoTemplate, Todos, YRIResponse)
+import Models exposing (CalendarMode, Todo, TodoTemplate, TodoTemplateForm, Todos, YRIResponse)
 import Time
 import Utils.Common as Common
 import Utils.Date as YRIDate
+
+
+
+-- Queries
 
 
 calendarView : Document Query Todos { vars | mode : CalendarMode, date : String }
@@ -43,7 +47,37 @@ calendarView =
     queryDocument queryRoot
 
 
-todoCreate : Time.Zone -> Document Mutation YRIResponse { vars | template : TodoTemplate }
+templateById : Document Query TodoTemplate { vars | id : Int }
+templateById =
+    let
+        idVar =
+            Var.required "id" .id Var.int
+
+        todoTemplate =
+            object TodoTemplate
+                |> with (field "id" [] int)
+                |> with (field "name" [] string)
+                |> with (field "date" [] int)
+                |> with (field "repeatPattern" [] string)
+                |> with (field "repeatFor" [] int)
+                |> with (field "repeatWeekDefinition" [] int)
+
+        queryRoot =
+            extract
+                (field "todoTemplateById"
+                    [ ( "id", Arg.variable idVar )
+                    ]
+                    todoTemplate
+                )
+    in
+    queryDocument queryRoot
+
+
+
+-- Mutations
+
+
+todoCreate : Time.Zone -> Document Mutation YRIResponse { vars | template : TodoTemplateForm }
 todoCreate zone =
     let
         yriResponse =
@@ -66,7 +100,7 @@ todoCreate zone =
 -- Variables
 
 
-templateVar : Time.Zone -> Var.Variable { vars | template : TodoTemplate }
+templateVar : Time.Zone -> Var.Variable { vars | template : TodoTemplateForm }
 templateVar zone =
     Var.required "template"
         .template

@@ -4,7 +4,7 @@ import Commands
 import Date
 import GraphQL.Client.Http as GraphqlClient
 import Http
-import Models exposing (CalendarViewResponse, Model, todoFormDefaults)
+import Models exposing (CalendarViewResponse, Model, TemplateRequestResponse, Todo, TodoTemplate, TodoTemplateForm, Todos, dummyTodo, todoFormDefaults)
 import Msgs exposing (Msg)
 import Task
 import Time
@@ -72,6 +72,20 @@ update msg model =
                 , todoForm = { todoForm | date = posix }
               }
             , Cmd.none
+            )
+
+        Msgs.DisplayTodoFormEdit ->
+            let
+                loadedTodo =
+                    loadActiveTodo model.contextMenuActiveFor model.todos
+
+                getTemplateCmd =
+                    Commands.sendTemplateByIdRequest loadedTodo.todoTemplateId
+            in
+            ( { model
+                | displayForm = True
+              }
+            , getTemplateCmd
             )
 
         Msgs.CancelTodoForm ->
@@ -184,6 +198,13 @@ update msg model =
             in
             ( updatedModel, Cmd.none )
 
+        -- Context Menu Control
+        Msgs.OpenContextMenu todoId ->
+            ( { model | contextMenuActiveFor = todoId }, Cmd.none )
+
+        Msgs.CloseContextMenu ->
+            ( { model | contextMenuActiveFor = 0 }, Cmd.none )
+
         -- Receive Api Responses
         Msgs.ReceiveCalendarViewResponse response ->
             let
@@ -243,6 +264,33 @@ update msg model =
             in
             newModelAndCmd
 
+        Msgs.ReceiveTemplateResponse response ->
+            let
+                result : TemplateRequestResponse
+                result =
+                    case response of
+                        Ok template ->
+                            { template = mapTemplateToForm (loadActiveTodo model.contextMenuActiveFor model.todos) template, errorMessage = "" }
+
+                        Err error ->
+                            let
+                                logger =
+                                    Debug.log "Template request Error => " error
+                            in
+                            case error of
+                                GraphqlClient.HttpError err ->
+                                    { template = todoFormDefaults, errorMessage = Common.expectError err }
+
+                                _ ->
+                                    { template = todoFormDefaults, errorMessage = "Something went wrong fetching the calendar" }
+            in
+            ( { model
+                | todoForm = result.template
+                , errorMessage = result.errorMessage
+              }
+            , Cmd.none
+            )
+
         -- Time basics
         Msgs.Zone zone ->
             ( { model | zone = zone }, Task.perform Msgs.NewTime Time.now )
@@ -257,3 +305,25 @@ update msg model =
 
         _ ->
             ( model, Cmd.none )
+
+
+
+-- helpers
+
+
+loadActiveTodo : Int -> Todos -> Todo
+loadActiveTodo id todos =
+    List.filter (\x -> x.id == id) todos
+        |> List.head
+        |> Maybe.withDefault dummyTodo
+
+
+mapTemplateToForm : Todo -> TodoTemplate -> TodoTemplateForm
+mapTemplateToForm to te =
+    { id = to.id
+    , name = te.name
+    , date = Time.millisToPosix to.date
+    , repeatPattern = te.repeatPattern
+    , repeatFor = te.repeatFor
+    , repeatWeekDefinition = te.repeatWeekDefinition
+    }

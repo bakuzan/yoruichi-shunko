@@ -1,11 +1,11 @@
-module Commands exposing (sendCalendarViewRequest, sendTodoCreateRequest)
+module Commands exposing (sendCalendarViewRequest, sendTemplateByIdRequest, sendTodoCreateRequest)
 
 import Date
 import GraphQL.Client.Http as GraphQLClient
 import GraphQL.Request.Builder as GraphQLBuilder
 import Http
 import Json.Decode as Decode
-import Models exposing (CalendarMode, Todo, TodoTemplate, Todos, YRIResponse)
+import Models exposing (CalendarMode, Todo, TodoTemplate, TodoTemplateForm, Todos, YRIResponse)
 import Msgs exposing (Msg)
 import Queries
 import Task exposing (Task)
@@ -32,12 +32,27 @@ sendCalendarViewRequest mode zone posix =
         |> Task.attempt Msgs.ReceiveCalendarViewResponse
 
 
-todoCreateRequest : Time.Zone -> TodoTemplate -> GraphQLBuilder.Request GraphQLBuilder.Mutation YRIResponse
+templateRequest : Int -> GraphQLBuilder.Request GraphQLBuilder.Query TodoTemplate
+templateRequest id =
+    GraphQLBuilder.request { id = id } Queries.templateById
+
+
+sendTemplateByIdRequest : Int -> Cmd Msg
+sendTemplateByIdRequest id =
+    sendGraphqlQueryRequest (templateRequest id)
+        |> Task.attempt Msgs.ReceiveTemplateResponse
+
+
+
+-- Mutations
+
+
+todoCreateRequest : Time.Zone -> TodoTemplateForm -> GraphQLBuilder.Request GraphQLBuilder.Mutation YRIResponse
 todoCreateRequest zone template =
     GraphQLBuilder.request { template = template } (Queries.todoCreate zone)
 
 
-sendTodoCreateRequest : Time.Zone -> TodoTemplate -> Cmd Msg
+sendTodoCreateRequest : Time.Zone -> TodoTemplateForm -> Cmd Msg
 sendTodoCreateRequest zone template =
     sendGraphqlMutation (todoCreateRequest zone template)
         |> Task.attempt Msgs.ReceiveTodoMutationResponse

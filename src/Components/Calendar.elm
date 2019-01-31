@@ -1,6 +1,7 @@
 module Components.Calendar exposing (CalendarData, CalendarState, view)
 
 import Components.Button as Button
+import Components.ContextMenu as ContextMenu
 import Css exposing (..)
 import Css.Global
 import Date exposing (Unit(..), add, fromPosix)
@@ -20,6 +21,7 @@ type alias CalendarState =
     , mode : CalendarMode
     , isDatepicker : Bool
     , isOpen : Bool
+    , contextMenuActiveFor : Int
     }
 
 
@@ -358,7 +360,7 @@ viewDay state data millis =
                         , margin2 (px 8) (px 0)
                         ]
                     ]
-                    ([] ++ List.map viewTodo todosForToday)
+                    ([] ++ List.map (viewTodo state.contextMenuActiveFor) todosForToday)
                 , div
                     [ css
                         [ displayFlex
@@ -385,11 +387,18 @@ viewDay state data millis =
         ]
 
 
-viewTodo : Todo -> Html Msg
-viewTodo todo =
+viewTodo : Int -> Todo -> Html Msg
+viewTodo activeMenuId todo =
     li [ class "list__item todo", css [ padding2 (px 5) (px 0) ] ]
         [ div [] [ text todo.name ]
-        , div [] []
+        , div [ css [ position relative ] ]
+            [ Button.view
+                [ onClick (Msgs.OpenContextMenu todo.id)
+                , Common.setCustomAttr "icon" "⋮"
+                ]
+                []
+            , ContextMenu.view (todo.id == activeMenuId)
+            ]
         ]
 
 

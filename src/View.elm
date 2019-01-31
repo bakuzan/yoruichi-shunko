@@ -21,6 +21,7 @@ view model =
             , mode = model.calendarMode
             , isDatepicker = False
             , isOpen = False
+            , contextMenuActiveFor = model.contextMenuActiveFor
             }
 
         calendarData =

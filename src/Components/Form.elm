@@ -10,7 +10,7 @@ import Date
 import Html.Styled exposing (Html, div, form, text)
 import Html.Styled.Attributes as Attr exposing (..)
 import Html.Styled.Events exposing (onClick, onInput, onSubmit)
-import Models exposing (Model, TodoTemplate)
+import Models exposing (Model, TodoTemplateForm)
 import Msgs exposing (Msg)
 import Time.Extra as Time
 import Utils.Common as Common
@@ -34,6 +34,7 @@ view model =
             , mode = model.calendarMode
             , isDatepicker = True
             , isOpen = model.displayDatepicker
+            , contextMenuActiveFor = 0
             }
 
         dpData =
@@ -94,7 +95,7 @@ view model =
         ]
 
 
-repeatExplanation : TodoTemplate -> Date.Date -> String
+repeatExplanation : TodoTemplateForm -> Date.Date -> String
 repeatExplanation data date =
     let
         weekday =
