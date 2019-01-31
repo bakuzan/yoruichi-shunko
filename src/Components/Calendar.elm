@@ -14,6 +14,7 @@ import Time exposing (Month(..))
 import Time.Extra as TimeE exposing (Interval(..))
 import Utils.Common as Common
 import Utils.Date as YRIDate
+import Utils.Styles as Styles
 
 
 type alias CalendarState =
@@ -125,9 +126,7 @@ viewControls state viewDate =
 
         btnCss =
             [ padding2 (px 2) (px 16)
-            , before
-                [ property "content" "attr(icon)"
-                ]
+            , Styles.icon
             ]
     in
     div
@@ -313,7 +312,13 @@ viewDay state data millis =
                         ]
                    ]
             )
-        , id (String.fromInt millis)
+        , id
+            (if millis == 0 then
+                ""
+
+             else
+                String.fromInt millis
+            )
         , class "yri-week__day yri-day"
         , classList
             [ ( "yri-day--dummy", isDummy )
@@ -391,9 +396,16 @@ viewTodo : Int -> Todo -> Html Msg
 viewTodo activeMenuId todo =
     li [ class "list__item todo", css [ padding2 (px 5) (px 0) ] ]
         [ div [] [ text todo.name ]
-        , div [ css [ position relative ] ]
+        , div
+            [ css
+                [ position relative
+                , displayFlex
+                , justifyContent flexEnd
+                ]
+            ]
             [ Button.view
                 [ onClick (Msgs.OpenContextMenu todo.id)
+                , css [ Styles.icon ]
                 , Common.setCustomAttr "icon" "⋮"
                 ]
                 []

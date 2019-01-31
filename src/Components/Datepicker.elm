@@ -7,12 +7,13 @@ import Css exposing (..)
 import Date
 import Html.Styled exposing (Html, button, div, input, label, span, text)
 import Html.Styled.Attributes exposing (autocomplete, class, css, maxlength, name, placeholder, property, tabindex, title, type_, value)
-import Html.Styled.Events exposing (keyCode, on, onClick, onInput)
+import Html.Styled.Events exposing (onClick, onInput)
 import Json.Decode as Json
 import Msgs exposing (Msg)
 import Time exposing (Posix)
 import Utils.Common as Common
 import Utils.Constants as Constants
+import Utils.Styles as Styles
 
 
 view : CalendarState -> CalendarData -> List (Html.Styled.Attribute Msg) -> Html Msg
@@ -24,7 +25,8 @@ view state data attrs =
     div [ class "yri-datepicker", css [ position relative ] ]
         ([ ClearableInput.view "date" "Date" dateStr ([ type_ "date" ] ++ attrs)
          , Button.view
-            [ class "button-icon"
+            [ css [ Styles.icon ]
+            , class "button-icon"
             , Common.setCustomAttr "aria-label" "Open Datepicker"
             , Common.setCustomAttr "icon" "\u{D83D}\u{DCC5}"
             , onClick (Msgs.OpenDatepicker data.selected)
@@ -45,7 +47,7 @@ view state data attrs =
                         , Common.setRole "button"
                         , tabindex 0
                         , onClick Msgs.CloseDatepicker
-                        , onKeyDown Constants.closeKeys Msgs.CloseDatepicker
+                        , Common.onKeyDown Constants.closeKeys Msgs.CloseDatepicker
                         ]
                         []
                     ]
@@ -54,16 +56,3 @@ view state data attrs =
                     [ text "" ]
                )
         )
-
-
-onKeyDown : List Int -> Msg -> Html.Styled.Attribute Msg
-onKeyDown keys msg =
-    let
-        isWatchedKey code =
-            if List.any (\x -> x == code) keys then
-                Json.succeed msg
-
-            else
-                Json.fail "Ignore"
-    in
-    on "keydown" (Json.andThen isWatchedKey keyCode)

@@ -49,8 +49,14 @@ escapeKey =
     27
 
 
+spaceKey : Int
+spaceKey =
+    32
+
+
 closeKeys : List Int
 closeKeys =
     [ enterKey
     , escapeKey
+    , spaceKey
     ]

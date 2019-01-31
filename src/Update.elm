@@ -286,6 +286,7 @@ update msg model =
             in
             ( { model
                 | todoForm = result.template
+                , contextMenuActiveFor = 0
                 , errorMessage = result.errorMessage
               }
             , Cmd.none
