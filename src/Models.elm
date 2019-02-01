@@ -18,6 +18,8 @@ type alias Model =
     , todos : Todos
     , errorMessage : String
     , contextMenuActiveFor : Int
+    , isInstanceForm : Bool
+    , deleteActiveFor : Int
     }
 
 
@@ -33,6 +35,8 @@ initialModel =
     , todos = []
     , errorMessage = ""
     , contextMenuActiveFor = 0
+    , isInstanceForm = True
+    , deleteActiveFor = 0
     }
 
 

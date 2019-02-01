@@ -1,11 +1,11 @@
-module Utils.Common exposing (calendarModeToString, expectError, onKeyDown, repeatForMax, setCustomAttr, setRole, splitList, stringToCalendarMode)
+module Utils.Common exposing (calendarModeToString, expectError, getUnsuccessfulResponseMessage, onKeyDown, repeatForMax, setCustomAttr, setRole, splitList, stringToCalendarMode)
 
 import Html.Styled exposing (Attribute)
 import Html.Styled.Attributes exposing (attribute)
 import Html.Styled.Events exposing (keyCode, on)
 import Http
 import Json.Decode as D
-import Models exposing (CalendarMode(..))
+import Models exposing (CalendarMode(..), YRIResponse)
 import Msgs exposing (Msg)
 
 
@@ -90,6 +90,12 @@ repeatForMax pattern =
 
 
 -- expecting errors
+
+
+getUnsuccessfulResponseMessage : YRIResponse -> String
+getUnsuccessfulResponseMessage res =
+    List.head res.errorMessages
+        |> Maybe.withDefault ""
 
 
 expectError : Http.Error -> String

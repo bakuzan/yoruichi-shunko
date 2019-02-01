@@ -18,12 +18,15 @@ type Msg
     | UpdateTextInput String String
     | UpdateDateInput YRIDateProperty String
     | UpdateSelectBox String String
+    | ToggleInstanceForm
     | OpenDatepicker Time.Posix
     | CloseDatepicker
     | OpenContextMenu Int
     | CloseContextMenu
     | DisplayTodoFormEdit
     | PrepareToDelete
+    | CancelDelete
+    | SubmitDelete Bool
     | ReceiveCalendarViewResponse (Result GraphQLClient.Error Todos)
     | ReceiveTodoMutationResponse (Result GraphQLClient.Error YRIResponse)
     | ReceiveTemplateResponse (Result GraphQLClient.Error TodoTemplate)

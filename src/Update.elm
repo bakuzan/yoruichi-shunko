@@ -101,20 +101,28 @@ update msg model =
                 isCreate =
                     model.todoForm.id == 0
 
+                loadedTodo =
+                    if isCreate then
+                        dummyTodo
+
+                    else
+                        loadActiveTodo model.todoForm.id model.todos
+
                 submitCmd =
                     if isCreate then
                         Commands.sendTodoCreateRequest model.zone model.todoForm
 
                     else
-                        Cmd.none
-
-                -- TODO handle Edit submission
-                logger =
-                    Debug.log "Submitted Form! - Not Implemented Yet" model.todoForm
+                        Commands.sendTodoUpdateRequest
+                            model.zone
+                            loadedTodo.todoTemplateId
+                            model.isInstanceForm
+                            model.todoForm
             in
             ( { model
                 | displayForm = False
                 , todoForm = todoFormDefaults
+                , isInstanceForm = True
               }
             , submitCmd
             )
@@ -198,12 +206,39 @@ update msg model =
             in
             ( updatedModel, Cmd.none )
 
+        Msgs.ToggleInstanceForm ->
+            ( { model | isInstanceForm = not model.isInstanceForm }, Cmd.none )
+
         -- Context Menu Control
         Msgs.OpenContextMenu todoId ->
             ( { model | contextMenuActiveFor = todoId }, Cmd.none )
 
         Msgs.CloseContextMenu ->
             ( { model | contextMenuActiveFor = 0 }, Cmd.none )
+
+        -- Delete handling
+        Msgs.PrepareToDelete ->
+            ( { model
+                | contextMenuActiveFor = 0
+                , deleteActiveFor = model.contextMenuActiveFor
+              }
+            , Cmd.none
+            )
+
+        Msgs.CancelDelete ->
+            ( { model
+                | deleteActiveFor = 0
+              }
+            , Cmd.none
+            )
+
+        Msgs.SubmitDelete instanceOnly ->
+            ( { model
+                | deleteActiveFor = 0
+              }
+            , Cmd.none
+              -- TODO HANDLING OF DELETE
+            )
 
         -- Receive Api Responses
         Msgs.ReceiveCalendarViewResponse response ->
@@ -237,10 +272,18 @@ update msg model =
             let
                 newModelAndCmd =
                     case response of
-                        Ok todos ->
-                            ( model
-                            , Commands.sendCalendarViewRequest model.calendarMode model.zone model.calendarViewDate
-                            )
+                        Ok res ->
+                            if res.success then
+                                ( model
+                                , Commands.sendCalendarViewRequest model.calendarMode model.zone model.calendarViewDate
+                                )
+
+                            else
+                                ( { model
+                                    | errorMessage = Common.getUnsuccessfulResponseMessage res
+                                  }
+                                , Cmd.none
+                                )
 
                         Err error ->
                             let

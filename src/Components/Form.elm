@@ -1,6 +1,7 @@
 module Components.Form exposing (view)
 
 import Components.Button as Button
+import Components.Checkbox as Checkbox
 import Components.ClearableInput as Input
 import Components.Datepicker as Datepicker
 import Components.RadioButton as RadioButton
@@ -22,6 +23,9 @@ view model =
     let
         values =
             model.todoForm
+
+        isCreate =
+            values.id == 0
 
         date =
             Date.fromPosix model.zone values.date
@@ -54,45 +58,76 @@ view model =
         ]
         [ div
             [ class "yri-form__content", css [ padding (em 0.33) ] ]
-            [ Input.view "name" "Name" values.name []
-            , Datepicker.view dpState dpData [ onInput (Msgs.UpdateDateInput Models.FormDate) ]
-            , SelectBox.view repeatPatternOptions "repeatPattern" "Repeat Frequency" values.repeatPattern
-            , if values.repeatPattern /= "None" then
-                div []
-                    [ Input.view "repeatFor"
-                        "For"
-                        (String.fromInt values.repeatFor)
-                        [ type_ "number"
-                        , Attr.min "1"
-                        , Attr.max (Common.repeatForMax values.repeatPattern |> String.fromInt)
-                        ]
-                    , if values.repeatPattern == "Weekly" then
-                        Input.view "repeatWeekDefinition"
-                            "Every X Weeks"
-                            (String.fromInt values.repeatWeekDefinition)
-                            [ type_ "number"
-                            , Attr.min "1"
-                            , Attr.max "52"
-                            ]
+            (([ Input.view "name" "Name" values.name []
+              , Datepicker.view dpState dpData [ onInput (Msgs.UpdateDateInput Models.FormDate) ]
+              , if isCreate then
+                    text ""
 
-                      else
-                        text ""
+                else
+                    Checkbox.view "Apply to this entry only"
+                        [ Attr.checked model.isInstanceForm
+                        , onClick Msgs.ToggleInstanceForm
+                        ]
+              ]
+                ++ (if isCreate || not model.isInstanceForm then
+                        templateFields date values
+
+                    else
+                        []
+                   )
+             )
+                ++ formButtons
+            )
+        ]
+
+
+templateFields : Date.Date -> TodoTemplateForm -> List (Html.Styled.Html Msg)
+templateFields date values =
+    [ SelectBox.view repeatPatternOptions "repeatPattern" "Repeat Frequency" values.repeatPattern
+    , if values.repeatPattern /= "None" then
+        div []
+            [ Input.view "repeatFor"
+                "For"
+                (String.fromInt values.repeatFor)
+                [ type_ "number"
+                , Attr.min "1"
+                , Attr.max (Common.repeatForMax values.repeatPattern |> String.fromInt)
+                ]
+            , if values.repeatPattern == "Weekly" then
+                Input.view "repeatWeekDefinition"
+                    "Every X Weeks"
+                    (String.fromInt values.repeatWeekDefinition)
+                    [ type_ "number"
+                    , Attr.min "1"
+                    , Attr.max "52"
                     ]
 
               else
                 text ""
-            , div [ css [ padding (em 0.33) ] ] [ text (repeatExplanation values date) ]
-            , div
-                [ class "button-group" ]
-                [ Button.view
-                    [ type_ "submit" ]
-                    [ text "Save" ]
-                , Button.viewLink
-                    [ onClick Msgs.CancelTodoForm ]
-                    [ text "Cancel" ]
-                ]
             ]
+
+      else
+        text ""
+    , div [ css [ padding (em 0.33) ] ] [ text (repeatExplanation values date) ]
+    ]
+
+
+formButtons : List (Html.Styled.Html Msg)
+formButtons =
+    [ div
+        [ class "button-group" ]
+        [ Button.view
+            [ type_ "submit" ]
+            [ text "Save" ]
+        , Button.viewLink
+            [ onClick Msgs.CancelTodoForm ]
+            [ text "Cancel" ]
         ]
+    ]
+
+
+
+-- helpers
 
 
 repeatExplanation : TodoTemplateForm -> Date.Date -> String

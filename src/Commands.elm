@@ -1,4 +1,4 @@
-module Commands exposing (sendCalendarViewRequest, sendTemplateByIdRequest, sendTodoCreateRequest)
+module Commands exposing (sendCalendarViewRequest, sendTemplateByIdRequest, sendTodoCreateRequest, sendTodoUpdateRequest)
 
 import Date
 import GraphQL.Client.Http as GraphQLClient
@@ -55,6 +55,17 @@ todoCreateRequest zone template =
 sendTodoCreateRequest : Time.Zone -> TodoTemplateForm -> Cmd Msg
 sendTodoCreateRequest zone template =
     sendGraphqlMutation (todoCreateRequest zone template)
+        |> Task.attempt Msgs.ReceiveTodoMutationResponse
+
+
+todoUpdateRequest : Time.Zone -> Int -> Bool -> TodoTemplateForm -> GraphQLBuilder.Request GraphQLBuilder.Mutation YRIResponse
+todoUpdateRequest zone templateId isInstance template =
+    GraphQLBuilder.request { todoTemplateId = templateId, template = template, isInstance = isInstance } (Queries.todoUpdate zone)
+
+
+sendTodoUpdateRequest : Time.Zone -> Int -> Bool -> TodoTemplateForm -> Cmd Msg
+sendTodoUpdateRequest zone templateId isInstance template =
+    sendGraphqlMutation (todoUpdateRequest zone templateId isInstance template)
         |> Task.attempt Msgs.ReceiveTodoMutationResponse
 
 
@@ -119,9 +130,3 @@ options =
     , withCredentials = False
     }
 
-
-
--- decoder : GraphQLBuilder.Request a b -> Decode.Decoder b
--- decoder request =
---     GraphQLBuilder.responseDataDecoder request
---         |> Decode.field "data"

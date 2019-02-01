@@ -7,9 +7,11 @@ const {
 } = require('./index');
 
 function mapTemplateToInstance(t, date = null) {
+  const todoTemplateId = t.hasOwnProperty('id') ? t.id : undefined;
   return {
     name: t.name,
-    date: isoDate(date || t.date)
+    date: isoDate(date || t.date),
+    todoTemplateId
   };
 }
 

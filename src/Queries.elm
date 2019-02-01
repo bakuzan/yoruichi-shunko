@@ -1,4 +1,4 @@
-module Queries exposing (calendarView, templateById, todoCreate)
+module Queries exposing (calendarView, templateById, todoCreate, todoUpdate)
 
 import Date
 import GraphQL.Request.Builder exposing (..)
@@ -89,6 +89,33 @@ todoCreate zone =
             extract
                 (field "todoCreate"
                     [ ( "template", Arg.variable (templateVar zone) )
+                    ]
+                    yriResponse
+                )
+    in
+    mutationDocument root
+
+
+todoUpdate : Time.Zone -> Document Mutation YRIResponse { vars | todoTemplateId : Int, template : TodoTemplateForm, isInstance : Bool }
+todoUpdate zone =
+    let
+        templateIdVar =
+            Var.required "todoTemplateId" .todoTemplateId Var.int
+
+        isInstanceVar =
+            Var.required "isInstance" .isInstance Var.bool
+
+        yriResponse =
+            object YRIResponse
+                |> with (field "success" [] bool)
+                |> with (field "errorMessages" [] (list string))
+
+        root =
+            extract
+                (field "todoUpdate"
+                    [ ( "todoTemplateId", Arg.variable templateIdVar )
+                    , ( "template", Arg.variable (templateVar zone) )
+                    , ( "isInstance", Arg.variable isInstanceVar )
                     ]
                     yriResponse
                 )
