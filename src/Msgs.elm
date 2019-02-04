@@ -27,6 +27,7 @@ type Msg
     | PrepareToDelete
     | CancelDelete
     | SubmitDelete Bool
+    | ClearError
     | ReceiveCalendarViewResponse (Result GraphQLClient.Error Todos)
     | ReceiveTodoMutationResponse (Result GraphQLClient.Error YRIResponse)
     | ReceiveTemplateResponse (Result GraphQLClient.Error TodoTemplate)

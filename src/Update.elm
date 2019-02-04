@@ -123,6 +123,7 @@ update msg model =
                 | displayForm = False
                 , todoForm = todoFormDefaults
                 , isInstanceForm = True
+                , isLoading = True
               }
             , submitCmd
             )
@@ -232,12 +233,12 @@ update msg model =
             , Cmd.none
             )
 
-        Msgs.SubmitDelete instanceOnly ->
+        Msgs.SubmitDelete isInstanceOnly ->
             ( { model
                 | deleteActiveFor = 0
+                , isLoading = True
               }
-            , Cmd.none
-              -- TODO HANDLING OF DELETE
+            , Commands.sendTodoRemoveRequest model.deleteActiveFor isInstanceOnly
             )
 
         -- Receive Api Responses
@@ -264,6 +265,7 @@ update msg model =
             ( { model
                 | todos = result.todos
                 , errorMessage = result.errorMessage
+                , isLoading = False
               }
             , Cmd.none
             )
@@ -274,13 +276,16 @@ update msg model =
                     case response of
                         Ok res ->
                             if res.success then
-                                ( model
+                                ( { model
+                                    | isLoading = False
+                                  }
                                 , Commands.sendCalendarViewRequest model.calendarMode model.zone model.calendarViewDate
                                 )
 
                             else
                                 ( { model
                                     | errorMessage = Common.getUnsuccessfulResponseMessage res
+                                    , isLoading = False
                                   }
                                 , Cmd.none
                                 )
@@ -294,6 +299,7 @@ update msg model =
                                 GraphqlClient.HttpError err ->
                                     ( { model
                                         | errorMessage = Common.expectError err
+                                        , isLoading = False
                                       }
                                     , Cmd.none
                                     )
@@ -301,6 +307,7 @@ update msg model =
                                 _ ->
                                     ( { model
                                         | errorMessage = "Something went wrong fetching the calendar"
+                                        , isLoading = False
                                       }
                                     , Cmd.none
                                     )
@@ -331,9 +338,14 @@ update msg model =
                 | todoForm = result.template
                 , contextMenuActiveFor = 0
                 , errorMessage = result.errorMessage
+                , isLoading = False
               }
             , Cmd.none
             )
+
+        -- Clear Error
+        Msgs.ClearError ->
+            ( { model | errorMessage = "" }, Cmd.none )
 
         -- Time basics
         Msgs.Zone zone ->

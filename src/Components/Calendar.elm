@@ -357,9 +357,10 @@ viewDay state data millis =
                     ]
                 ]
                 [ ul
-                    [ class "list column one"
-                    , css
-                        [ listStyleType none
+                    [ css
+                        [ property "display" "grid"
+                        , property "grid-auto-rows" "1fr"
+                        , listStyleType none
                         , padding (px 5)
                         , paddingBottom (px 25)
                         , margin2 (px 8) (px 0)
@@ -394,8 +395,20 @@ viewDay state data millis =
 
 viewTodo : Int -> Todo -> Html Msg
 viewTodo activeMenuId todo =
-    li [ class "list__item todo", css [ padding2 (px 5) (px 0) ] ]
-        [ div [] [ text todo.name ]
+    li
+        [ class "list__item todo"
+        , css
+            [ displayFlex
+            , padding2 (px 5) (px 0)
+            ]
+        ]
+        [ div
+            [ css
+                [ displayFlex
+                , flex (int 1)
+                ]
+            ]
+            [ text todo.name ]
         , div
             [ css
                 [ position relative

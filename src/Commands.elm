@@ -1,4 +1,10 @@
-module Commands exposing (sendCalendarViewRequest, sendTemplateByIdRequest, sendTodoCreateRequest, sendTodoUpdateRequest)
+module Commands exposing
+    ( sendCalendarViewRequest
+    , sendTemplateByIdRequest
+    , sendTodoCreateRequest
+    , sendTodoRemoveRequest
+    , sendTodoUpdateRequest
+    )
 
 import Date
 import GraphQL.Client.Http as GraphQLClient
@@ -69,6 +75,17 @@ sendTodoUpdateRequest zone templateId isInstance template =
         |> Task.attempt Msgs.ReceiveTodoMutationResponse
 
 
+todoRemoveRequest : Int -> Bool -> GraphQLBuilder.Request GraphQLBuilder.Mutation YRIResponse
+todoRemoveRequest instanceId onlyInstance =
+    GraphQLBuilder.request { id = instanceId, onlyInstance = onlyInstance } Queries.todoRemove
+
+
+sendTodoRemoveRequest : Int -> Bool -> Cmd Msg
+sendTodoRemoveRequest instanceId onlyInstance =
+    sendGraphqlMutation (todoRemoveRequest instanceId onlyInstance)
+        |> Task.attempt Msgs.ReceiveTodoMutationResponse
+
+
 
 -- Requester
 
@@ -129,4 +146,3 @@ options =
     , timeout = Nothing
     , withCredentials = False
     }
-

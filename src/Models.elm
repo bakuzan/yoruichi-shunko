@@ -20,6 +20,7 @@ type alias Model =
     , contextMenuActiveFor : Int
     , isInstanceForm : Bool
     , deleteActiveFor : Int
+    , isLoading : Bool
     }
 
 
@@ -37,6 +38,7 @@ initialModel =
     , contextMenuActiveFor = 0
     , isInstanceForm = True
     , deleteActiveFor = 0
+    , isLoading = False
     }
 
 

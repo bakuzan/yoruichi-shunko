@@ -17,7 +17,9 @@ const db = new Sequelize(Constants.appName, null, null, {
 const TodoTemplateModel = db.import('./todo-template');
 const TodoInstanceModel = db.import('./todo-instance');
 
-TodoTemplateModel.TodoInstance = TodoTemplateModel.hasMany(TodoInstanceModel);
+TodoTemplateModel.TodoInstance = TodoTemplateModel.hasMany(TodoInstanceModel, {
+  onDelete: 'cascade'
+});
 TodoInstanceModel.TodoTemplate = TodoInstanceModel.belongsTo(TodoTemplateModel);
 
 // Sync and Migrate db

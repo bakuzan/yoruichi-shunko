@@ -34,7 +34,7 @@ const Mutation = gql`
     ): YRIReponse
 
     todoTemplateRemove(id: Int!): YRIReponse
-    todoInstanceRemove(id: Int!): YRIReponse
+    todoRemove(id: Int!, onlyInstance: Boolean): YRIReponse
   }
 `;
 

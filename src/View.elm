@@ -2,6 +2,7 @@ module View exposing (view)
 
 import Components.Button as Button
 import Components.Calendar as Calendar
+import Components.DeleteConfirmation as DeleteConfirmation
 import Components.Form as Form
 import Components.RadioButton as RadioButton
 import Css exposing (..)
@@ -13,6 +14,7 @@ import Models exposing (Model, YRIDateProperty(..))
 import Msgs exposing (Msg)
 import Utils.Common as Common
 import Utils.Constants exposing (calendarModeOptions)
+import Utils.Styles as Styles
 
 
 view : Model -> Html Msg
@@ -44,22 +46,10 @@ view model =
             , minHeight (calc (vh 100) minus (px 50))
             ]
         ]
-        ([ if model.errorMessage == "" then
-            text ""
-
-           else
-            div
-                [ class "yri-error"
-                , css
-                    [ position fixed
-                    , top (px 60)
-                    , left (pct 50)
-                    , transform (translateX (pct -50))
-                    ]
-                ]
-                [ text model.errorMessage ]
+        ([ viewError model.errorMessage
+         , viewLoader model.isLoading
          ]
-            ++ (if not model.displayForm then
+            ++ (if not model.displayForm && model.deleteActiveFor == 0 then
                     [ div
                         [ css
                             [ displayFlex
@@ -82,7 +72,76 @@ view model =
                         ]
                     ]
 
+                else if model.deleteActiveFor /= 0 then
+                    [ DeleteConfirmation.view ]
+
                 else
                     [ Form.view model ]
                )
         )
+
+
+viewLoader : Bool -> Html Msg
+viewLoader show =
+    let
+        bouncerStyle =
+            []
+    in
+    if show then
+        div []
+            [ div [ css bouncerStyle ] []
+            , div [ css bouncerStyle ] []
+            , div [ css bouncerStyle ] []
+            ]
+
+    else
+        text ""
+
+
+viewError : String -> Html Msg
+viewError errorMessage =
+    if errorMessage == "" then
+        text ""
+
+    else
+        div
+            [ class "yri-error"
+            , css
+                [ displayFlex
+                , position fixed
+                , top (px 60)
+                , left (pct 50)
+                , minWidth (pct 50)
+                , transform (translateX (pct -50))
+                , zIndex (int 1000)
+                ]
+            ]
+            [ div
+                [ css
+                    [ displayFlex
+                    , justifyContent center
+                    , alignItems center
+                    , width (px 31)
+                    , Styles.icon
+                    , backgroundColor (hex "ff0000")
+                    , color (hex "ffffff")
+                    , fontWeight bold
+                    ]
+                , Common.setCustomAttr "icon" "!"
+                ]
+                []
+            , div
+                [ css
+                    [ displayFlex
+                    , flex (int 1)
+                    , padding2 (px 5) (px 10)
+                    ]
+                ]
+                [ text errorMessage ]
+            , Button.view
+                [ css [ Styles.icon ]
+                , Common.setCustomAttr "icon" "╳"
+                , onClick Msgs.ClearError
+                ]
+                []
+            ]

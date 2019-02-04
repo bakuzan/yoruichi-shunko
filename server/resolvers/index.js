@@ -81,12 +81,22 @@ module.exports = {
       }
     },
     async todoTemplateRemove(_, { id }) {
-      const deletedCount = await TodoTemplate.destroy({ where: { id } });
+      const deletedCount = await TodoTemplate.destroy({
+        where: { id }
+      });
       return handleDeleteResponse(id, deletedCount);
     },
-    async todoInstanceRemove(_, { id }) {
-      const deletedCount = await TodoInstance.destroy({ where: { id } });
-      return handleDeleteResponse(id, deletedCount);
+    async todoRemove(_, { id, onlyInstance = true }) {
+      if (onlyInstance) {
+        const deletedCount = await TodoInstance.destroy({ where: { id } });
+        return handleDeleteResponse(id, deletedCount);
+      } else {
+        const instance = await TodoInstance.findByPk(id, { raw: true });
+        const deletedCount = await TodoTemplate.destroy({
+          where: { id: instance.todoTemplateId }
+        });
+        return handleDeleteResponse(id, deletedCount);
+      }
     }
   },
   TodoTemplate: TodoTemplateResolvers,

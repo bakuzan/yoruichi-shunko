@@ -1,4 +1,10 @@
-module Queries exposing (calendarView, templateById, todoCreate, todoUpdate)
+module Queries exposing
+    ( calendarView
+    , templateById
+    , todoCreate
+    , todoRemove
+    , todoUpdate
+    )
 
 import Date
 import GraphQL.Request.Builder exposing (..)
@@ -80,11 +86,6 @@ templateById =
 todoCreate : Time.Zone -> Document Mutation YRIResponse { vars | template : TodoTemplateForm }
 todoCreate zone =
     let
-        yriResponse =
-            object YRIResponse
-                |> with (field "success" [] bool)
-                |> with (field "errorMessages" [] (list string))
-
         root =
             extract
                 (field "todoCreate"
@@ -105,17 +106,33 @@ todoUpdate zone =
         isInstanceVar =
             Var.required "isInstance" .isInstance Var.bool
 
-        yriResponse =
-            object YRIResponse
-                |> with (field "success" [] bool)
-                |> with (field "errorMessages" [] (list string))
-
         root =
             extract
                 (field "todoUpdate"
                     [ ( "todoTemplateId", Arg.variable templateIdVar )
                     , ( "template", Arg.variable (templateVar zone) )
                     , ( "isInstance", Arg.variable isInstanceVar )
+                    ]
+                    yriResponse
+                )
+    in
+    mutationDocument root
+
+
+todoRemove : Document Mutation YRIResponse { vars | id : Int, onlyInstance : Bool }
+todoRemove =
+    let
+        idVar =
+            Var.required "id" .id Var.int
+
+        onlyInstanceVar =
+            Var.required "onlyInstance" .onlyInstance Var.bool
+
+        root =
+            extract
+                (field "todoRemove"
+                    [ ( "id", Arg.variable idVar )
+                    , ( "onlyInstance", Arg.variable onlyInstanceVar )
                     ]
                     yriResponse
                 )
@@ -141,6 +158,13 @@ templateVar zone =
             , Var.field "repeatWeekDefinition" .repeatWeekDefinition Var.int
             ]
         )
+
+
+yriResponse : ValueSpec NonNull ObjectType YRIResponse vars
+yriResponse =
+    object YRIResponse
+        |> with (field "success" [] bool)
+        |> with (field "errorMessages" [] (list string))
 
 
 
