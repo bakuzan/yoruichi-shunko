@@ -38,7 +38,7 @@ view theme fieldName fieldLabel fieldValue attrs =
             []
         , label [] [ text fieldLabel ]
         , viewClearButton theme fieldName fieldValue
-        , if fieldName /= "date" then
+        , if fieldName == "name" then
             span
                 [ class "clearable-input-count"
                 , css
@@ -50,7 +50,8 @@ view theme fieldName fieldLabel fieldValue attrs =
                     , fontSize (rem 0.5)
                     ]
                 ]
-                [ text (String.fromInt (String.length fieldValue) ++ "/100")
+                [ text
+                    (String.fromInt (String.length fieldValue) ++ "/100")
                 ]
 
           else
