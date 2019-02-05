@@ -1,6 +1,29 @@
-module Models exposing (CalendarMode(..), CalendarViewResponse, Model, TemplateRequestResponse, Todo, TodoTemplate, TodoTemplateForm, Todos, YRIDateProperty(..), YRIResponse, dummyTodo, initialModel, todoFormDefaults)
+module Models exposing (CalendarMode(..), CalendarViewResponse, Flags, Model, TemplateRequestResponse, Theme, Todo, TodoTemplate, TodoTemplateForm, Todos, YRIDateProperty(..), YRIResponse, dummyTodo, initialModel, todoFormDefaults)
 
 import Time
+
+
+
+-- App flags
+
+
+type alias Flags =
+    { theme : Theme
+    }
+
+
+type alias Theme =
+    { baseBackground : String
+    , baseBackgroundHover : String
+    , baseColour : String
+    , colour : String
+    , contrast : String
+    , anchorColour : String
+    , anchorColourHover : String
+    , primaryBackground : String
+    , primaryBackgroundHover : String
+    , primaryColour : String
+    }
 
 
 
@@ -21,11 +44,12 @@ type alias Model =
     , isInstanceForm : Bool
     , deleteActiveFor : Int
     , isLoading : Bool
+    , theme : Theme
     }
 
 
-initialModel : Model
-initialModel =
+initialModel : Flags -> Model
+initialModel flags =
     { calendarMode = Week
     , today = Time.millisToPosix 0
     , zone = Time.utc
@@ -39,6 +63,7 @@ initialModel =
     , isInstanceForm = True
     , deleteActiveFor = 0
     , isLoading = False
+    , theme = flags.theme
     }
 
 
@@ -49,7 +74,7 @@ initialModel =
 type alias Todo =
     { id : Int
     , name : String
-    , date : Int -- Int -- Date in millis
+    , date : Int -- Date in millis
     , isRepeated : Bool
     , todoTemplateId : Int
     }

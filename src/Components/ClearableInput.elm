@@ -1,16 +1,22 @@
 module Components.ClearableInput exposing (view)
 
+import Components.Button as Button
+import Css exposing (..)
 import Html.Styled exposing (Html, button, div, input, label, span, text)
 import Html.Styled.Attributes exposing (autocomplete, class, css, maxlength, name, placeholder, property, title, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
+import Models exposing (Theme)
 import Msgs exposing (Msg)
 import Utils.Common as Common
 import Utils.Styles as Styles
 
 
-view : String -> String -> String -> List (Html.Styled.Attribute Msg) -> Html Msg
-view fieldName fieldLabel fieldValue attrs =
-    div [ class "has-float-label input-container clearable-input" ]
+view : Theme -> String -> String -> String -> List (Html.Styled.Attribute Msg) -> Html Msg
+view theme fieldName fieldLabel fieldValue attrs =
+    div
+        [ class "has-float-label input-container clearable-input"
+        , css (Styles.containers theme)
+        ]
         [ input
             ([ type_ "text"
              , name fieldName
@@ -19,31 +25,57 @@ view fieldName fieldLabel fieldValue attrs =
              , value fieldValue
              , autocomplete False
              , onInput (Msgs.UpdateTextInput fieldName)
+             , css
+                [ displayFlex
+                , flex3 (int 1) (int 0) (pct 100)
+                , paddingRight (em 1.5)
+                , width (pct 100)
+                , boxSizing borderBox
+                ]
              ]
                 ++ attrs
             )
             []
         , label [] [ text fieldLabel ]
-        , viewClearButton fieldName fieldValue
-        , span [ class "clearable-input-count" ]
-            [ text (String.fromInt (String.length fieldValue) ++ "/100")
-            ]
+        , viewClearButton theme fieldName fieldValue
+        , if fieldName /= "date" then
+            span
+                [ class "clearable-input-count"
+                , css
+                    [ position absolute
+                    , right (px 10)
+                    , bottom (px -5)
+                    , top auto
+                    , left auto
+                    , fontSize (rem 0.5)
+                    ]
+                ]
+                [ text (String.fromInt (String.length fieldValue) ++ "/100")
+                ]
+
+          else
+            text ""
         ]
 
 
-viewClearButton : String -> String -> Html Msg
-viewClearButton fieldName str =
+viewClearButton : Theme -> String -> String -> Html Msg
+viewClearButton theme fieldName str =
     if String.length str == 0 then
         text ""
 
     else
-        button
-            [ type_ "button"
-            , class "button-icon small clear-input"
-            , title "Clear"
-            , css [ Styles.icon ]
-            , Common.setCustomAttr "icon" "╳"
+        Button.viewIcon "╳"
+            { theme = theme, isPrimary = False }
+            [ title "Clear"
             , Common.setCustomAttr "aria-label" ("Clear " ++ fieldName)
             , onClick (Msgs.UpdateTextInput fieldName "")
+            , css
+                [ position relative
+                , right (px 30)
+                , fontSize (rem 0.8)
+                , maxHeight (px 32)
+                , marginTop auto
+                , marginBottom auto
+                ]
             ]
             []

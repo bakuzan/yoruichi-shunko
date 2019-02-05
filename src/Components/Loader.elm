@@ -4,11 +4,12 @@ import Css exposing (..)
 import Css.Animations as Ani exposing (keyframes)
 import Html.Styled exposing (Html, div, text)
 import Html.Styled.Attributes exposing (css)
+import Models exposing (Theme)
 import Msgs exposing (Msg)
 
 
-view : Bool -> Html Msg
-view show =
+view : Theme -> Bool -> Html Msg
+view theme show =
     let
         frames =
             keyframes
@@ -29,7 +30,7 @@ view show =
             , height (rem 1)
             , margin2 (rem 3) (rem 0.2)
             , borderRadius (pct 50)
-            , backgroundColor (hex "8385aa")
+            , backgroundColor (hex theme.colour)
             , property "animation" "0.6s infinite alternate"
             , animationName frames
             , nthChild "2" [ animationDelay (ms 200) ]

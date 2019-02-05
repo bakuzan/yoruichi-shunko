@@ -1,7 +1,7 @@
 module Msgs exposing (Msg(..))
 
 import GraphQL.Client.Http as GraphQLClient
-import Models exposing (TodoTemplate, Todos, YRIDateProperty, YRIResponse)
+import Models exposing (Theme, TodoTemplate, Todos, YRIDateProperty, YRIResponse)
 import Time
 
 
@@ -31,3 +31,4 @@ type Msg
     | ReceiveCalendarViewResponse (Result GraphQLClient.Error Todos)
     | ReceiveTodoMutationResponse (Result GraphQLClient.Error YRIResponse)
     | ReceiveTemplateResponse (Result GraphQLClient.Error TodoTemplate)
+    | UpdateTheme Theme

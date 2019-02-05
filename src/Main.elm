@@ -1,8 +1,8 @@
-module Main exposing (init, main)
+port module Main exposing (init, main)
 
 import Browser
 import Html.Styled exposing (toUnstyled)
-import Models exposing (Model, initialModel)
+import Models exposing (Flags, Model, Theme, initialModel)
 import Msgs exposing (Msg)
 import Task
 import Time
@@ -10,18 +10,28 @@ import Update exposing (update)
 import View exposing (view)
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( initialModel
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    ( initialModel flags
     , Task.perform Msgs.Zone Time.here
     )
 
 
-main : Program () Model Msg
+port theme : (Theme -> msg) -> Sub msg
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ theme Msgs.UpdateTheme
+        ]
+
+
+main : Program Flags Model Msg
 main =
     Browser.element
         { view = view >> toUnstyled
-        , init = \_ -> init
+        , init = init
         , update = update
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         }

@@ -7,11 +7,12 @@ import Components.Datepicker as Datepicker
 import Components.RadioButton as RadioButton
 import Components.SelectBox as SelectBox
 import Css exposing (..)
+import Css.Global exposing (children, typeSelector)
 import Date
 import Html.Styled exposing (Html, div, form, text)
 import Html.Styled.Attributes as Attr exposing (..)
 import Html.Styled.Events exposing (onClick, onInput, onSubmit)
-import Models exposing (Model, TodoTemplateForm)
+import Models exposing (Model, Theme, TodoTemplateForm)
 import Msgs exposing (Msg)
 import Time.Extra as Time
 import Utils.Common as Common
@@ -39,6 +40,7 @@ view model =
             , isDatepicker = True
             , isOpen = model.displayDatepicker
             , contextMenuActiveFor = 0
+            , theme = model.theme
             }
 
         dpData =
@@ -57,36 +59,43 @@ view model =
         , onSubmit Msgs.SubmitTodoForm
         ]
         [ div
-            [ class "yri-form__content", css [ padding (em 0.33) ] ]
-            (([ Input.view "name" "Name" values.name []
+            [ class "yri-form__content"
+            , css
+                [ padding (em 0.33)
+                , maxWidth (px 400)
+                ]
+            ]
+            (([ Input.view model.theme "name" "Name" values.name []
               , Datepicker.view dpState dpData [ onInput (Msgs.UpdateDateInput Models.FormDate) ]
               , if isCreate then
                     text ""
 
                 else
-                    Checkbox.view "Apply to this entry only"
-                        [ Attr.checked model.isInstanceForm
-                        , onClick Msgs.ToggleInstanceForm
+                    Checkbox.view model.theme
+                        "Apply to this entry only"
+                        model.isInstanceForm
+                        [ onClick Msgs.ToggleInstanceForm
                         ]
               ]
                 ++ (if isCreate || not model.isInstanceForm then
-                        templateFields date values
+                        templateFields model.theme date values
 
                     else
                         []
                    )
              )
-                ++ formButtons
+                ++ formButtons model.theme
             )
         ]
 
 
-templateFields : Date.Date -> TodoTemplateForm -> List (Html.Styled.Html Msg)
-templateFields date values =
-    [ SelectBox.view repeatPatternOptions "repeatPattern" "Repeat Frequency" values.repeatPattern
+templateFields : Theme -> Date.Date -> TodoTemplateForm -> List (Html.Styled.Html Msg)
+templateFields theme date values =
+    [ SelectBox.view theme repeatPatternOptions "repeatPattern" "Repeat Frequency" values.repeatPattern
     , if values.repeatPattern /= "None" then
         div []
-            [ Input.view "repeatFor"
+            [ Input.view theme
+                "repeatFor"
                 "For"
                 (String.fromInt values.repeatFor)
                 [ type_ "number"
@@ -94,7 +103,8 @@ templateFields date values =
                 , Attr.max (Common.repeatForMax values.repeatPattern |> String.fromInt)
                 ]
             , if values.repeatPattern == "Weekly" then
-                Input.view "repeatWeekDefinition"
+                Input.view theme
+                    "repeatWeekDefinition"
                     "Every X Weeks"
                     (String.fromInt values.repeatWeekDefinition)
                     [ type_ "number"
@@ -108,18 +118,23 @@ templateFields date values =
 
       else
         text ""
-    , div [ css [ padding (em 0.33) ] ] [ text (repeatExplanation values date) ]
+    , div [ css [ padding (em 0.33), margin2 (px 10) (px 0) ] ] [ text (repeatExplanation values date) ]
     ]
 
 
-formButtons : List (Html.Styled.Html Msg)
-formButtons =
+formButtons : Theme -> List (Html.Styled.Html Msg)
+formButtons theme =
     [ div
-        [ class "button-group" ]
-        [ Button.view
+        [ css
+            [ displayFlex
+            , justifyContent center
+            , children [ typeSelector "button" [ margin2 (px 0) (px 5) ] ]
+            ]
+        ]
+        [ Button.view { theme = theme, isPrimary = True }
             [ type_ "submit" ]
             [ text "Save" ]
-        , Button.viewLink
+        , Button.viewLink theme
             [ onClick Msgs.CancelTodoForm ]
             [ text "Cancel" ]
         ]

@@ -23,12 +23,11 @@ view state data attrs =
             Date.fromPosix state.zone data.selected |> Date.format "YYYY-MM-dd"
     in
     div [ class "yri-datepicker", css [ position relative ] ]
-        ([ ClearableInput.view "date" "Date" dateStr ([ type_ "date" ] ++ attrs)
-         , Button.view
-            [ css [ Styles.icon ]
-            , class "button-icon"
-            , Common.setCustomAttr "aria-label" "Open Datepicker"
-            , Common.setCustomAttr "icon" "\u{D83D}\u{DCC5}"
+        ([ ClearableInput.view state.theme "date" "Date" dateStr ([ type_ "date" ] ++ attrs)
+         , Button.viewIcon
+            "\u{D83D}\u{DCC5}"
+            { theme = state.theme, isPrimary = False }
+            [ Common.setCustomAttr "aria-label" "Open Datepicker"
             , onClick (Msgs.OpenDatepicker data.selected)
             ]
             []

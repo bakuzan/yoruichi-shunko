@@ -5,14 +5,15 @@ import Css exposing (..)
 import Html.Styled exposing (Html, button, div, li, text, ul)
 import Html.Styled.Attributes exposing (class, css, tabindex, title)
 import Html.Styled.Events exposing (onClick)
+import Models exposing (Theme)
 import Msgs exposing (Msg)
 import Utils.Common as Common
 import Utils.Constants as Constants
 import Utils.Styles as Styles
 
 
-view : Bool -> Html Msg
-view active =
+view : Theme -> Bool -> Html Msg
+view theme active =
     if not active then
         text ""
 
@@ -28,6 +29,7 @@ view active =
                 [ position absolute
                 , boxShadow4 (px 1) (px 2) (px 5) (px 1)
                 , zIndex (int 1)
+                , backgroundColor (hex theme.baseBackground)
                 ]
             ]
             [ ul
@@ -40,20 +42,18 @@ view active =
                     ]
                 ]
                 [ li [ css itemCss ]
-                    [ Button.view
+                    [ Button.viewIcon "✎"
+                        { theme = theme, isPrimary = False }
                         [ onClick Msgs.DisplayTodoFormEdit
-                        , css [ Styles.icon ]
-                        , Common.setCustomAttr "icon" "✎"
                         , Common.setCustomAttr "aria-label" "Edit"
                         , title "Edit"
                         ]
                         []
                     ]
                 , li [ css itemCss ]
-                    [ Button.view
+                    [ Button.viewIcon "╳"
+                        { theme = theme, isPrimary = False }
                         [ onClick Msgs.PrepareToDelete
-                        , css [ Styles.icon ]
-                        , Common.setCustomAttr "icon" "╳"
                         , Common.setCustomAttr "aria-label" "Delete"
                         , title "Delete"
                         ]

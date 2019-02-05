@@ -347,6 +347,10 @@ update msg model =
         Msgs.ClearError ->
             ( { model | errorMessage = "" }, Cmd.none )
 
+        -- Port values
+        Msgs.UpdateTheme theme ->
+            ( { model | theme = theme }, Cmd.none )
+
         -- Time basics
         Msgs.Zone zone ->
             ( { model | zone = zone }, Task.perform Msgs.NewTime Time.now )

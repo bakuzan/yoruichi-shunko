@@ -5,13 +5,14 @@ import Css exposing (..)
 import Html.Styled exposing (Html, div, text)
 import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events exposing (onClick)
+import Models exposing (Theme)
 import Msgs exposing (Msg)
 import Utils.Common as Common
 import Utils.Styles as Styles
 
 
-view : Html.Styled.Html Msg
-view =
+view : Theme -> Html.Styled.Html Msg
+view theme =
     div
         [ css
             [ displayFlex
@@ -27,9 +28,9 @@ view =
                 , padding2 (px 10) (px 0)
                 ]
             ]
-            [ padded [ Button.view [ onClick (Msgs.SubmitDelete False) ] [ text "Entire Series" ] ]
-            , padded [ Button.view [ onClick (Msgs.SubmitDelete True) ] [ text "Instance Only" ] ]
-            , padded [ Button.viewLink [ onClick Msgs.CancelDelete ] [ text "Cancel" ] ]
+            [ padded [ Button.view { theme = theme, isPrimary = False } [ onClick (Msgs.SubmitDelete False) ] [ text "Entire Series" ] ]
+            , padded [ Button.view { theme = theme, isPrimary = False } [ onClick (Msgs.SubmitDelete True) ] [ text "Instance Only" ] ]
+            , padded [ Button.viewLink theme [ onClick Msgs.CancelDelete ] [ text "Cancel" ] ]
             ]
         ]
 

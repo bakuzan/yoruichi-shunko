@@ -11,7 +11,7 @@ import Html
 import Html.Styled exposing (Html, div, text)
 import Html.Styled.Attributes exposing (class, css, title)
 import Html.Styled.Events exposing (onClick)
-import Models exposing (Model, YRIDateProperty(..))
+import Models exposing (Model, Theme, YRIDateProperty(..))
 import Msgs exposing (Msg)
 import Utils.Common as Common
 import Utils.Constants exposing (calendarModeOptions)
@@ -27,6 +27,7 @@ view model =
             , isDatepicker = False
             , isOpen = False
             , contextMenuActiveFor = model.contextMenuActiveFor
+            , theme = model.theme
             }
 
         calendarData =
@@ -48,8 +49,8 @@ view model =
             , minHeight (calc (vh 100) minus (px 50))
             ]
         ]
-        ([ viewError model.errorMessage
-         , Loader.view model.isLoading
+        ([ viewError model.theme model.errorMessage
+         , Loader.view model.theme model.isLoading
          ]
             ++ (if not model.displayForm && model.deleteActiveFor == 0 then
                     [ div
@@ -59,9 +60,9 @@ view model =
                             , alignItems center
                             ]
                         ]
-                        [ RadioButton.radioGroup "calendar-modes" calendarMode calendarModeOptions
+                        [ RadioButton.radioGroup model.theme "calendar-modes" calendarMode calendarModeOptions
                         , div [ css [ padding2 (px 0) (px 10) ] ]
-                            [ Button.view
+                            [ Button.view { theme = model.theme, isPrimary = True }
                                 [ Common.setCustomAttr "aria-label" "Jump to today"
                                 , title "Jump to today"
                                 , onClick (Msgs.UpdateCalendarViewDate False model.today)
@@ -76,7 +77,7 @@ view model =
                     ]
 
                 else if model.deleteActiveFor /= 0 then
-                    [ DeleteConfirmation.view ]
+                    [ DeleteConfirmation.view model.theme ]
 
                 else
                     [ Form.view model ]
@@ -84,8 +85,8 @@ view model =
         )
 
 
-viewError : String -> Html Msg
-viewError errorMessage =
+viewError : Theme -> String -> Html Msg
+viewError theme errorMessage =
     if errorMessage == "" then
         text ""
 
@@ -100,6 +101,8 @@ viewError errorMessage =
                 , minWidth (pct 50)
                 , transform (translateX (pct -50))
                 , zIndex (int 1000)
+                , backgroundColor (hex theme.baseBackground)
+                , color (hex theme.baseColour)
                 ]
             ]
             [ div
@@ -124,10 +127,9 @@ viewError errorMessage =
                     ]
                 ]
                 [ text errorMessage ]
-            , Button.view
-                [ css [ Styles.icon ]
-                , Common.setCustomAttr "icon" "╳"
-                , onClick Msgs.ClearError
+            , Button.viewIcon "╳"
+                { theme = theme, isPrimary = False }
+                [ onClick Msgs.ClearError
                 ]
                 []
             ]

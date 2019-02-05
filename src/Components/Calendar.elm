@@ -8,7 +8,7 @@ import Date exposing (Unit(..), add, fromPosix)
 import Html.Styled exposing (Html, button, div, li, table, tbody, td, text, th, thead, tr, ul)
 import Html.Styled.Attributes exposing (class, classList, css, disabled, id)
 import Html.Styled.Events exposing (onClick)
-import Models exposing (CalendarMode, Model, Todo, Todos, YRIDateProperty(..))
+import Models exposing (CalendarMode, Model, Theme, Todo, Todos, YRIDateProperty(..))
 import Msgs exposing (Msg)
 import Time exposing (Month(..))
 import Time.Extra as TimeE exposing (Interval(..))
@@ -23,6 +23,7 @@ type alias CalendarState =
     , isDatepicker : Bool
     , isOpen : Bool
     , contextMenuActiveFor : Int
+    , theme : Theme
     }
 
 
@@ -47,6 +48,8 @@ view state data =
                 , bottom (px 0)
                 , left (px 0)
                 , transform (translateY (pct 100))
+                , zIndex (int 100)
+                , backgroundColor (hex state.theme.baseBackground)
                 ]
 
         tableStyle =
@@ -126,7 +129,7 @@ viewControls state viewDate =
 
         btnCss =
             [ padding2 (px 2) (px 16)
-            , Styles.icon
+            , fontSize (em 1.5)
             ]
     in
     div
@@ -138,22 +141,22 @@ viewControls state viewDate =
             , padding (px 5)
             ]
         ]
-        [ Button.view
+        [ Button.viewIcon "‹"
+            { theme = state.theme, isPrimary = False }
             [ css btnCss
             , class "yri-calendar__shift-button button-icon"
             , Common.setCustomAttr "aria-label" "Previous"
-            , Common.setCustomAttr "icon" "‹"
             , onClick (Msgs.UpdateCalendarViewDate state.isDatepicker prevDate)
             ]
             []
         , div
             [ class "yri-calendar__month-text" ]
             [ text displayDate ]
-        , Button.view
+        , Button.viewIcon "›"
+            { theme = state.theme, isPrimary = False }
             [ css btnCss
             , class "yri-calendar__shift-button"
             , Common.setCustomAttr "aria-label" "Next"
-            , Common.setCustomAttr "icon" "›"
             , onClick (Msgs.UpdateCalendarViewDate state.isDatepicker nextDate)
             ]
             []
@@ -338,11 +341,13 @@ viewDay state data millis =
                 numDisplay
 
           else
-            Button.view
+            Button.view { theme = state.theme, isPrimary = isSelected }
                 [ css
                     [ dayPadding
                     , width (pct 100)
                     , height (pct 100)
+                    , important (minWidth (px 25))
+                    , important (minHeight (px 35))
                     ]
                 , disabled isDummy
                 , onClick (Msgs.UpdateDate data.selectedType asPosix)
@@ -366,7 +371,7 @@ viewDay state data millis =
                         , margin2 (px 8) (px 0)
                         ]
                     ]
-                    ([] ++ List.map (viewTodo state.contextMenuActiveFor) todosForToday)
+                    ([] ++ List.map (viewTodo state) todosForToday)
                 , div
                     [ css
                         [ displayFlex
@@ -378,7 +383,7 @@ viewDay state data millis =
                         , padding (px 2)
                         ]
                     ]
-                    [ Button.viewLink
+                    [ Button.viewLink state.theme
                         [ css
                             [ visibility hidden
                             ]
@@ -393,19 +398,23 @@ viewDay state data millis =
         ]
 
 
-viewTodo : Int -> Todo -> Html Msg
-viewTodo activeMenuId todo =
+viewTodo : CalendarState -> Todo -> Html Msg
+viewTodo state todo =
     li
         [ class "list__item todo"
         , css
             [ displayFlex
             , padding2 (px 5) (px 0)
+            , hover
+                [ backgroundColor (hex state.theme.baseBackgroundHover)
+                ]
             ]
         ]
         [ div
             [ css
                 [ displayFlex
                 , flex (int 1)
+                , padding2 (px 0) (px 5)
                 ]
             ]
             [ text todo.name ]
@@ -416,13 +425,12 @@ viewTodo activeMenuId todo =
                 , justifyContent flexEnd
                 ]
             ]
-            [ Button.view
+            [ Button.viewIcon "⋮"
+                { theme = state.theme, isPrimary = False }
                 [ onClick (Msgs.OpenContextMenu todo.id)
-                , css [ Styles.icon ]
-                , Common.setCustomAttr "icon" "⋮"
                 ]
                 []
-            , ContextMenu.view (todo.id == activeMenuId)
+            , ContextMenu.view state.theme (todo.id == state.contextMenuActiveFor)
             ]
         ]
 
