@@ -50,6 +50,7 @@ view state data =
                 , transform (translateY (pct 100))
                 , zIndex (int 100)
                 , backgroundColor (hex state.theme.baseBackground)
+                , boxShadow4 (px 1) (px 2) (px 5) (px 1)
                 ]
 
         tableStyle =

@@ -13,14 +13,29 @@ view : Theme -> List ( String, String ) -> String -> String -> String -> Html Ms
 view theme options fieldName fieldLabel fieldValue =
     div
         [ class "has-float-label select-container"
-        , css (Styles.containers theme)
+        , css
+            (Styles.containers theme
+                ++ [ after
+                        [ Styles.content "⌵"
+                        , position absolute
+                        , top (pct 50)
+                        , right (px 5)
+                        , transform (translateY (pct -50))
+                        , fontWeight bold
+                        , pointerEvents none
+                        ]
+                   ]
+            )
         ]
         [ select
             [ class "select-box"
             , name fieldName
             , value fieldValue
             , onInput (Msgs.UpdateSelectBox fieldName)
-            , css [ width (pct 100) ]
+            , css
+                [ width (pct 100)
+                , focus [ borderBottomColor (hex theme.colour) ]
+                ]
             ]
             ([]
                 ++ List.map viewOption options

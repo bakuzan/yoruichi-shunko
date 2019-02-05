@@ -62,6 +62,6 @@ view theme checkboxLabel isChecked inputProps =
                     ++ inputProps
                 )
                 []
-            , span [] [ text checkboxLabel ]
+            , span [ css [ fontSize (em 1) ] ] [ text checkboxLabel ]
             ]
         ]

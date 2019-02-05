@@ -13,6 +13,17 @@ import Utils.Styles as Styles
 
 view : Theme -> String -> String -> String -> List (Html.Styled.Attribute Msg) -> Html Msg
 view theme fieldName fieldLabel fieldValue attrs =
+    let
+        isText =
+            fieldName == "name"
+
+        fixRightPadding =
+            if isText then
+                paddingRight (em 1.5)
+
+            else
+                paddingRight (px 0.5)
+    in
     div
         [ class "has-float-label input-container clearable-input"
         , css (Styles.containers theme)
@@ -20,7 +31,7 @@ view theme fieldName fieldLabel fieldValue attrs =
         [ input
             ([ type_ "text"
              , name fieldName
-             , placeholder " "
+             , placeholder fieldLabel
              , maxlength 100
              , value fieldValue
              , autocomplete False
@@ -31,6 +42,8 @@ view theme fieldName fieldLabel fieldValue attrs =
                 , paddingRight (em 1.5)
                 , width (pct 100)
                 , boxSizing borderBox
+                , focus [ borderBottomColor (hex theme.colour) ]
+                , fixRightPadding
                 ]
              ]
                 ++ attrs
@@ -38,7 +51,7 @@ view theme fieldName fieldLabel fieldValue attrs =
             []
         , label [] [ text fieldLabel ]
         , viewClearButton theme fieldName fieldValue
-        , if fieldName == "name" then
+        , if isText then
             span
                 [ class "clearable-input-count"
                 , css
@@ -61,7 +74,7 @@ view theme fieldName fieldLabel fieldValue attrs =
 
 viewClearButton : Theme -> String -> String -> Html Msg
 viewClearButton theme fieldName str =
-    if String.length str == 0 then
+    if String.length str == 0 || fieldName /= "name" then
         text ""
 
     else
@@ -77,6 +90,7 @@ viewClearButton theme fieldName str =
                 , maxHeight (px 32)
                 , marginTop auto
                 , marginBottom auto
+                , important (backgroundColor inherit)
                 ]
             ]
             []
