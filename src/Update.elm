@@ -251,10 +251,6 @@ update msg model =
                             { todos = todos, errorMessage = "" }
 
                         Err error ->
-                            let
-                                logger =
-                                    Debug.log "Calendar View Error => " error
-                            in
                             case error of
                                 GraphqlClient.HttpError err ->
                                     { todos = [], errorMessage = Common.expectError err }
@@ -291,10 +287,6 @@ update msg model =
                                 )
 
                         Err error ->
-                            let
-                                logger =
-                                    Debug.log "Calendar View Error => " error
-                            in
                             case error of
                                 GraphqlClient.HttpError err ->
                                     ( { model
@@ -323,10 +315,6 @@ update msg model =
                             { template = mapTemplateToForm (loadActiveTodo model.contextMenuActiveFor model.todos) template, errorMessage = "" }
 
                         Err error ->
-                            let
-                                logger =
-                                    Debug.log "Template request Error => " error
-                            in
                             case error of
                                 GraphqlClient.HttpError err ->
                                     { template = todoFormDefaults, errorMessage = Common.expectError err }

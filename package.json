@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build": "bash ./tools/optimise.sh 'src/Main.elm'"
+  },
   "devDependencies": {
     "http-proxy-middleware": "^0.19.1"
   }

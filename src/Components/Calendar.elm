@@ -100,9 +100,6 @@ view state data =
 viewControls : CalendarState -> Time.Posix -> Html Msg
 viewControls state viewDate =
     let
-        logger =
-            Debug.log "View Date" (Date.fromPosix state.zone viewDate |> Date.format "dd MMM YYYY")
-
         startOfWeek =
             YRIDate.getMonday state.zone viewDate
 
