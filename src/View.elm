@@ -4,10 +4,11 @@ import Components.Button as Button
 import Components.Calendar as Calendar
 import Components.DeleteConfirmation as DeleteConfirmation
 import Components.Form as Form
+import Components.Loader as Loader
 import Components.RadioButton as RadioButton
 import Css exposing (..)
 import Html
-import Html.Styled exposing (..)
+import Html.Styled exposing (Html, div, text)
 import Html.Styled.Attributes exposing (class, css, title)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (Model, YRIDateProperty(..))
@@ -41,19 +42,21 @@ view model =
     in
     div
         [ css
-            [ displayFlex
+            [ position relative
+            , displayFlex
             , flexDirection column
             , minHeight (calc (vh 100) minus (px 50))
             ]
         ]
         ([ viewError model.errorMessage
-         , viewLoader model.isLoading
+         , Loader.view model.isLoading
          ]
             ++ (if not model.displayForm && model.deleteActiveFor == 0 then
                     [ div
                         [ css
                             [ displayFlex
                             , padding2 (px 5) (px 10)
+                            , alignItems center
                             ]
                         ]
                         [ RadioButton.radioGroup "calendar-modes" calendarMode calendarModeOptions
@@ -79,23 +82,6 @@ view model =
                     [ Form.view model ]
                )
         )
-
-
-viewLoader : Bool -> Html Msg
-viewLoader show =
-    let
-        bouncerStyle =
-            []
-    in
-    if show then
-        div []
-            [ div [ css bouncerStyle ] []
-            , div [ css bouncerStyle ] []
-            , div [ css bouncerStyle ] []
-            ]
-
-    else
-        text ""
 
 
 viewError : String -> Html Msg
