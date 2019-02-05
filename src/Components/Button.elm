@@ -100,7 +100,7 @@ btnStyle =
     , whiteSpace noWrap
     , cursor pointer
     , disabled
-        [ backgroundColor (hex "ccc")
+        [ important (backgroundColor (hex "ccc"))
         , color (hex "666")
         , cursor default
         ]

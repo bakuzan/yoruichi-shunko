@@ -75,7 +75,14 @@ controlFloatLabelStyle =
         [ opacity (int 1)
         , property "transition" "all 0.2s"
         ]
-    , pseudoClass "placeholder-shown:not(:focus)::-webkit-input-placeholder" [ opacity (int 0) ]
+    , pseudoClass "placeholder-shown:not(:focus)::-webkit-input-placeholder"
+        [ opacity (int 0)
+        , fontSize (em 1.3)
+        , property "opacity" "0.5"
+        , pointerEvents none
+        , top (em 0.25)
+        , left (em 0.5)
+        ]
     , focus
         [ outline none
         ]

@@ -31,7 +31,7 @@ view theme fieldName fieldLabel fieldValue attrs =
         [ input
             ([ type_ "text"
              , name fieldName
-             , placeholder fieldLabel
+             , placeholder " "
              , maxlength 100
              , value fieldValue
              , autocomplete False
@@ -42,6 +42,8 @@ view theme fieldName fieldLabel fieldValue attrs =
                 , paddingRight (em 1.5)
                 , width (pct 100)
                 , boxSizing borderBox
+                , backgroundColor (hex theme.baseBackground)
+                , color (hex theme.baseColour)
                 , focus [ borderBottomColor (hex theme.colour) ]
                 , fixRightPadding
                 ]
@@ -49,7 +51,7 @@ view theme fieldName fieldLabel fieldValue attrs =
                 ++ attrs
             )
             []
-        , label [] [ text fieldLabel ]
+        , label [ css [ opacity (int 0) ] ] [ text fieldLabel ]
         , viewClearButton theme fieldName fieldValue
         , if isText then
             span
