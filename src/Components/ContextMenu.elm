@@ -22,6 +22,9 @@ view theme active =
             itemCss =
                 [ padding (px 2)
                 ]
+
+            btnCss =
+                [ before [ width (px 25) ] ]
         in
         div
             [ class "context-menu"
@@ -47,6 +50,7 @@ view theme active =
                         [ onClick Msgs.DisplayTodoFormEdit
                         , Common.setCustomAttr "aria-label" "Edit"
                         , title "Edit"
+                        , css btnCss
                         ]
                         []
                     ]
@@ -56,6 +60,7 @@ view theme active =
                         [ onClick Msgs.PrepareToDelete
                         , Common.setCustomAttr "aria-label" "Delete"
                         , title "Delete"
+                        , css btnCss
                         ]
                         []
                     ]

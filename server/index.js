@@ -10,7 +10,7 @@ const typeDefs = require('./type-definitions');
 const resolvers = require('./resolvers');
 const context = require('./context');
 
-const GRAPHQL_PATH = '/yri/graphql';
+const GRAPHQL_PATH = '/yri-graphql';
 const app = express();
 const server = new ApolloServer({
   typeDefs,

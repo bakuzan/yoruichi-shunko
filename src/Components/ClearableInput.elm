@@ -25,7 +25,7 @@ view theme fieldName fieldLabel fieldValue attrs =
                 paddingRight (px 0.5)
     in
     div
-        [ class "has-float-label input-container clearable-input"
+        [ class "yri-input-container"
         , css (Styles.containers theme)
         ]
         [ input
@@ -55,14 +55,13 @@ view theme fieldName fieldLabel fieldValue attrs =
         , viewClearButton theme fieldName fieldValue
         , if isText then
             span
-                [ class "clearable-input-count"
-                , css
+                [ css
                     [ position absolute
                     , right (px 10)
                     , bottom (px -5)
-                    , top auto
-                    , left auto
-                    , fontSize (rem 0.5)
+                    , important (top auto)
+                    , important (left auto)
+                    , important (fontSize (rem 0.5))
                     ]
                 ]
                 [ text

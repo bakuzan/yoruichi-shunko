@@ -26,7 +26,7 @@ view theme checkboxLabel isChecked inputProps =
                     ]
                 ]
     in
-    div [ css (Styles.containers theme) ]
+    div [ class "yri-checkbox", css (Styles.containers theme) ]
         [ label
             [ css
                 [ displayFlex
@@ -62,6 +62,12 @@ view theme checkboxLabel isChecked inputProps =
                     ++ inputProps
                 )
                 []
-            , span [ css [ fontSize (em 1) ] ] [ text checkboxLabel ]
+            , span
+                [ css
+                    [ fontSize (em 1.2)
+                    , cursor pointer
+                    ]
+                ]
+                [ text checkboxLabel ]
             ]
         ]

@@ -301,11 +301,18 @@ viewDay state data millis =
 
         todosForToday =
             filterRecords state.zone millis data.records
+
+        tdBorder =
+            if isDummy then
+                border3 (px 1) solid transparent
+
+            else
+                border3 (px 1) solid (hex state.theme.contrast)
     in
     td
         [ css
             (cssForTd
-                ++ [ border3 (px 1) solid transparent
+                ++ [ tdBorder
                    , hover
                         [ Css.Global.descendants
                             [ Css.Global.class "button-link" [ visibility visible ]

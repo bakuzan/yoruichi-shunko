@@ -36,7 +36,7 @@ containers theme =
            , minHeight (px 35)
            , boxSizing contentBox
            , focus
-                [ borderBottomColor (hex theme.colour)
+                [ important (borderBottomColor (hex theme.colour))
                 ]
            ]
 
@@ -75,7 +75,7 @@ controlFloatLabelStyle =
         [ opacity (int 1)
         , property "transition" "all 0.2s"
         ]
-    , pseudoClass "placeholder-shown:not(:focus)::-webkit-input-placeholder"
+    , pseudoClass "placeholder-shown:not(:focus) + label"
         [ opacity (int 0)
         , fontSize (em 1.3)
         , property "opacity" "0.5"

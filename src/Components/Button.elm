@@ -19,7 +19,7 @@ type alias ButtonTheme =
 view : ButtonTheme -> List (Html.Styled.Attribute msg) -> List (Html.Styled.Html msg) -> Html.Styled.Html msg
 view btnTheme attrs children =
     button
-        ([ class "yri-button button ripple"
+        ([ class "yri-button ripple"
          , type_ "button"
          , css
             (btnStyle
@@ -62,7 +62,7 @@ viewLink theme attrs children =
 viewIcon : String -> ButtonTheme -> List (Html.Styled.Attribute msg) -> List (Html.Styled.Html msg) -> Html.Styled.Html msg
 viewIcon icon btnTheme attrs children =
     button
-        ([ class "yri-button button-icon"
+        ([ class "yri-button"
          , type_ "button"
          , Common.setCustomAttr "icon" icon
          , css

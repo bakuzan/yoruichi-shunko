@@ -99,10 +99,12 @@ viewError theme errorMessage =
                 , top (px 60)
                 , left (pct 50)
                 , minWidth (pct 50)
+                , height (px 40)
                 , transform (translateX (pct -50))
                 , zIndex (int 1000)
                 , backgroundColor (hex theme.baseBackground)
                 , color (hex theme.baseColour)
+                , boxShadow4 (px 1) (px 1) (px 10) (px 1)
                 ]
             ]
             [ div
@@ -110,7 +112,7 @@ viewError theme errorMessage =
                     [ displayFlex
                     , justifyContent center
                     , alignItems center
-                    , width (px 31)
+                    , width (px 40)
                     , Styles.icon
                     , backgroundColor (hex "ff0000")
                     , color (hex "ffffff")
@@ -122,6 +124,7 @@ viewError theme errorMessage =
             , div
                 [ css
                     [ displayFlex
+                    , alignItems center
                     , flex (int 1)
                     , padding2 (px 5) (px 10)
                     ]
