@@ -16,6 +16,7 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: () => ({ ...context }),
+  introspection: true,
   playground: {
     settings: {
       'editor.cursorShape': 'block',
