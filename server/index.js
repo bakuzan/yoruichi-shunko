@@ -52,7 +52,7 @@ server.applyMiddleware({
   }
 });
 
-app.listen({ port: PORT }, () => {
+app.listen(PORT, () => {
   console.log(
     chalk
       .hex('#993399')
