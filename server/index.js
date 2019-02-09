@@ -31,6 +31,12 @@ const server = new ApolloServer({
   }
 });
 
+// Overide origin if it doesn't exist
+app.use(function(req, _, next) {
+  req.headers.origin = req.headers.origin || req.headers.host;
+  next();
+});
+
 // Start the server
 const PORT =
   (process.env.NODE_ENV === Constants.environment.production
