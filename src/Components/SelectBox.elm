@@ -12,7 +12,7 @@ import Utils.Styles as Styles
 view : Theme -> List ( String, String ) -> String -> String -> String -> Html Msg
 view theme options fieldName fieldLabel fieldValue =
     div
-        [ class "has-float-label select-container"
+        [ class "has-float-label yri-select-container"
         , css
             (Styles.containers theme
                 ++ [ after

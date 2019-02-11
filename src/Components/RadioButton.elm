@@ -26,7 +26,7 @@ radioGroup theme groupName groupValue options =
             radioOption theme groupName groupValue
     in
     div
-        [ class "radio-group"
+        [ class "yri-radio-group"
         , Common.setRole "radiogroup"
         , css [ children [ typeSelector "label" [ margin2 (px 0) (px 2) ] ] ]
         ]
@@ -63,7 +63,7 @@ radioOption theme groupName groupValue option =
                 []
     in
     label
-        [ class "yri-radio radio"
+        [ class "yri-radio"
         , Common.setRole "radio"
         , css
             [ display inlineFlex

@@ -10,12 +10,13 @@ const typeDefs = require('./type-definitions');
 const resolvers = require('./resolvers');
 const context = require('./context');
 
-const GRAPHQL_PATH = '/yri/graphql';
+const GRAPHQL_PATH = '/yri-graphql';
 const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: () => ({ ...context }),
+  introspection: true,
   playground: {
     settings: {
       'editor.cursorShape': 'block',
@@ -28,6 +29,12 @@ const server = new ApolloServer({
     console.log(error);
     return error;
   }
+});
+
+// Overide origin if it doesn't exist
+app.use(function(req, _, next) {
+  req.headers.origin = req.headers.origin || req.headers.host;
+  next();
 });
 
 // Start the server
@@ -51,7 +58,7 @@ server.applyMiddleware({
   }
 });
 
-app.listen({ port: PORT }, () => {
+app.listen(PORT, () => {
   console.log(
     chalk
       .hex('#993399')

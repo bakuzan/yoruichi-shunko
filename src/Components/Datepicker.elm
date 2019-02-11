@@ -35,7 +35,7 @@ view state data attrs =
             , displayFlex
             , alignItems center
             , children
-                [ typeSelector ".input-container"
+                [ typeSelector ".yri-input-container"
                     [ flex3 (int 1) (int 0) (pct 100)
                     , maxWidth (calc (pct 100) minus (px 10))
                     ]
