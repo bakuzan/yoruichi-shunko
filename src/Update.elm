@@ -40,6 +40,18 @@ update msg model =
             in
             ( { model | calendarViewDate = posix }, sendCmd )
 
+        Msgs.UpdateCalendarModeViewDay posix ->
+            let
+                sendCmd =
+                    Commands.sendCalendarViewRequest Models.Day model.zone posix
+            in
+            ( { model
+                | calendarViewDate = posix
+                , calendarMode = Models.Day
+              }
+            , sendCmd
+            )
+
         Msgs.UpdateDate prop posix ->
             let
                 updatedModel =

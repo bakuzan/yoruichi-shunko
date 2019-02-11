@@ -12,7 +12,7 @@ import Utils.Styles as Styles
 view : Theme -> List ( String, String ) -> String -> String -> String -> Html Msg
 view theme options fieldName fieldLabel fieldValue =
     div
-        [ class "has-float-label yri-select-container"
+        [ class "yri-select-container"
         , css
             (Styles.containers theme
                 ++ [ after
@@ -28,12 +28,14 @@ view theme options fieldName fieldLabel fieldValue =
             )
         ]
         [ select
-            [ class "select-box"
+            [ class "yri-select-box"
             , name fieldName
             , value fieldValue
             , onInput (Msgs.UpdateSelectBox fieldName)
             , css
                 [ width (pct 100)
+                , backgroundColor (hex theme.baseBackground)
+                , color (hex theme.baseColour)
                 , focus [ borderBottomColor (hex theme.colour) ]
                 ]
             ]

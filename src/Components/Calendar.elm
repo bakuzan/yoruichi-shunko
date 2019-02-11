@@ -6,7 +6,7 @@ import Css exposing (..)
 import Css.Global
 import Date exposing (Unit(..), add, fromPosix)
 import Html.Styled exposing (Html, button, div, li, table, tbody, td, text, th, thead, tr, ul)
-import Html.Styled.Attributes exposing (class, classList, css, disabled, id)
+import Html.Styled.Attributes exposing (class, classList, css, disabled, id, title)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (CalendarMode, Model, Theme, Todo, Todos, YRIDateProperty(..))
 import Msgs exposing (Msg)
@@ -277,7 +277,7 @@ viewDay state data millis =
                 [ textAlign center, verticalAlign middle ]
 
             else
-                [ position relative, verticalAlign baseline ]
+                [ position relative, verticalAlign baseline, padding (px 0) ]
 
         dayPadding =
             padding2 (px 10) (px 5)
@@ -338,12 +338,35 @@ viewDay state data millis =
             text ""
 
           else if not state.isDatepicker then
-            div
+            Button.view { theme = state.theme, isPrimary = False }
                 [ css
                     [ dayPadding
+                    , important (justifyContent spaceBetween)
+                    , width (calc (pct 100) minus (px 10))
+                    , height (px 23)
+                    , boxSizing contentBox
                     ]
+                , title "View this day"
+                , onClick (Msgs.UpdateCalendarModeViewDay asPosix)
                 ]
-                numDisplay
+                (numDisplay
+                    ++ (if isToday then
+                            [ div
+                                [ css
+                                    [ Styles.icon
+                                    , fontSize (em 1.25)
+                                    , color (hex state.theme.contrast)
+                                    ]
+                                , Common.setCustomAttr "icon" "★"
+                                , title "Today"
+                                ]
+                                []
+                            ]
+
+                        else
+                            []
+                       )
+                )
 
           else
             Button.view { theme = state.theme, isPrimary = isSelected }

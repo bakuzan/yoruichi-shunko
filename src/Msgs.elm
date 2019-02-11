@@ -12,6 +12,7 @@ type Msg
     | UpdateCalendarMode String
     | UpdateDate YRIDateProperty Time.Posix
     | UpdateCalendarViewDate Bool Time.Posix
+    | UpdateCalendarModeViewDay Time.Posix
     | DisplayTodoForm Time.Posix
     | CancelTodoForm
     | SubmitTodoForm

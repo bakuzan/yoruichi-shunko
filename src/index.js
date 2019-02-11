@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'development') {
 
   // THEME TEST
   // let timer = null;
-  // let newTheme = themeOne;
+  // let newTheme = themeTwo;
   // updateBody(newTheme);
 
   // clearInterval(timer);
