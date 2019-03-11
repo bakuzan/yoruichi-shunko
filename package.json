@@ -1,4 +1,7 @@
 {
+  "name": "yoruichi-shunko",
+  "version": "0.1.0",
+  "description": "Todo UI for Erza",
   "scripts": {
     "build": "bash ./tools/optimise.sh 'src/Main.elm'"
   },
