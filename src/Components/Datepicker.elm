@@ -21,7 +21,7 @@ view : CalendarState -> CalendarData -> List (Html.Styled.Attribute Msg) -> Html
 view state data attrs =
     let
         dateStr =
-            Date.fromPosix state.zone data.selected |> Date.format "YYYY-MM-dd"
+            Date.fromPosix state.zone data.selected |> Date.toIsoString
 
         hidePseudos =
             [ display none

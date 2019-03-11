@@ -27,7 +27,7 @@ calendarViewRequest mode zone posix =
     let
         date =
             Date.fromPosix zone posix
-                |> Date.format "YYYY-MM-dd"
+                |> Date.toIsoString
     in
     GraphQLBuilder.request { mode = mode, date = date } Queries.calendarView
 

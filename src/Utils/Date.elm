@@ -5,11 +5,6 @@ import Time exposing (Posix, Zone)
 import Time.Extra as Time exposing (Interval(..))
 
 
-posixToReadable : Zone -> Posix -> String
-posixToReadable zone posix =
-    Date.fromPosix zone posix |> Date.format "DD MMM YYYY"
-
-
 dateToPosix : Zone -> Date.Date -> Posix
 dateToPosix zone d =
     Time.Parts (Date.year d) (Date.month d) (Date.day d) 0 0 0 0 |> Time.partsToPosix zone

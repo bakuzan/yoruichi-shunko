@@ -108,10 +108,10 @@ viewControls state viewDate =
 
         dateFormat =
             if not state.isDatepicker && state.mode /= Models.Month then
-                "dd MMM YYYY"
+                "dd MMM yyyy"
 
             else
-                "MMM YYYY"
+                "MMM yyyy"
 
         displayDate =
             if not state.isDatepicker && state.mode == Models.Week then
@@ -334,7 +334,7 @@ viewDay state data millis =
             , ( "yri-day--is-today", isToday )
             ]
         ]
-        [ if state.mode == Models.Day then
+        [ if state.mode == Models.Day || isDummy then
             text ""
 
           else if not state.isDatepicker then

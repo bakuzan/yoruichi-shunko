@@ -1,7 +1,10 @@
 port module Main exposing (init, main)
 
 import Browser
+import Browser.Events exposing (onKeyDown)
 import Html.Styled exposing (toUnstyled)
+import Json.Decode as Json
+import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
 import Models exposing (Flags, Model, Theme, initialModel)
 import Msgs exposing (Msg)
 import Task
@@ -24,6 +27,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ theme Msgs.UpdateTheme
+        , onKeyDown (Json.map Msgs.HandleKeyboardEvent decodeKeyboardEvent)
         ]
 
 

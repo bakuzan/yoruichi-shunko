@@ -14,6 +14,7 @@ import Html.Styled.Attributes as Attr exposing (..)
 import Html.Styled.Events exposing (onClick, onInput, onSubmit)
 import Models exposing (Model, Theme, TodoTemplateForm)
 import Msgs exposing (Msg)
+import Time as T
 import Time.Extra as Time
 import Utils.Common as Common
 import Utils.Constants exposing (repeatPatternOptions)
@@ -32,7 +33,7 @@ view model =
             Date.fromPosix model.zone values.date
 
         dateStr =
-            Date.format "YYYY-MM-dd" date
+            Date.toIsoString date
 
         dpState =
             { zone = model.zone

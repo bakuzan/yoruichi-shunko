@@ -1,6 +1,7 @@
 module Msgs exposing (Msg(..))
 
 import GraphQL.Client.Http as GraphQLClient
+import Keyboard.Event exposing (KeyboardEvent)
 import Models exposing (Theme, TodoTemplate, Todos, YRIDateProperty, YRIResponse)
 import Time
 
@@ -33,3 +34,4 @@ type Msg
     | ReceiveTodoMutationResponse (Result GraphQLClient.Error YRIResponse)
     | ReceiveTemplateResponse (Result GraphQLClient.Error TodoTemplate)
     | UpdateTheme Theme
+    | HandleKeyboardEvent KeyboardEvent

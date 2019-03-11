@@ -174,4 +174,4 @@ yriResponse =
 datePost : Time.Zone -> Time.Posix -> String
 datePost zone posix =
     Date.fromPosix zone posix
-        |> Date.format "YYYY-MM-dd"
+        |> Date.toIsoString

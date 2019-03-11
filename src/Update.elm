@@ -136,6 +136,7 @@ update msg model =
                 , todoForm = todoFormDefaults
                 , isInstanceForm = True
                 , isLoading = True
+                , calendarViewDate = model.todoForm.date
               }
             , submitCmd
             )
@@ -228,6 +229,30 @@ update msg model =
 
         Msgs.CloseContextMenu ->
             ( { model | contextMenuActiveFor = 0 }, Cmd.none )
+
+        Msgs.HandleKeyboardEvent event ->
+            let
+                isEscape =
+                    case event.key of
+                        Just val ->
+                            val == "Escape"
+
+                        Nothing ->
+                            False
+
+                newModel =
+                    if isEscape && (model.displayDatepicker || model.contextMenuActiveFor /= 0) then
+                        { model
+                            | contextMenuActiveFor = 0
+                            , displayDatepicker = False
+                        }
+
+                    else
+                        model
+            in
+            ( newModel
+            , Cmd.none
+            )
 
         -- Delete handling
         Msgs.PrepareToDelete ->
