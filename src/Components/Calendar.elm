@@ -546,12 +546,20 @@ getNextPrevDates state viewDate =
     ( prevDate, nextDate )
 
 
+
+{--
+ The 35min / flooring fiddle is to ensure that any time values
+ are irrelevant and ignored. We only care about the DATE, not TIME
+--}
+
+
 filterRecords : Time.Zone -> Int -> Todos -> Todos
 filterRecords zone millis todos =
     List.filter
         (\t ->
             (Time.millisToPosix t.date
-                |> TimeE.ceiling Day zone
+                |> TimeE.add Minute 35 zone
+                |> TimeE.floor Day zone
                 |> Time.posixToMillis
             )
                 == millis
