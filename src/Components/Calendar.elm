@@ -5,7 +5,7 @@ import Components.ContextMenu as ContextMenu
 import Css exposing (..)
 import Css.Global
 import Date exposing (Unit(..), add, fromPosix)
-import Html.Styled exposing (Html, button, div, li, table, tbody, td, text, th, thead, tr, ul)
+import Html.Styled exposing (Html, button, div, li, span, table, tbody, td, text, th, thead, tr, ul)
 import Html.Styled.Attributes exposing (class, classList, css, disabled, id, title)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (CalendarMode, Model, Theme, Todo, Todos, YRIDateProperty(..))
@@ -56,6 +56,8 @@ view state data =
         tableStyle =
             [ tableLayout fixed
             , width (pct 100)
+            , borderCollapse separate
+            , borderSpacing (px 0)
             ]
     in
     div
@@ -307,7 +309,7 @@ viewDay state data millis =
                 border3 (px 1) solid transparent
 
             else
-                border3 (px 1) solid (hex state.theme.contrast)
+                border3 (px 1) solid (hex "efefef")
     in
     td
         [ css
@@ -428,6 +430,26 @@ viewDay state data millis =
 
 viewTodo : CalendarState -> Todo -> Html Msg
 viewTodo state todo =
+    let
+        isLastLabel =
+            "Is last in series"
+
+        ifLastIcon =
+            if todo.isLast then
+                span
+                    [ css
+                        [ position absolute
+                        , right (px -3)
+                        , fontSize (em 0.5)
+                        ]
+                    , title isLastLabel
+                    , Common.setCustomAttr "aria-label" isLastLabel
+                    ]
+                    [ text " \u{D83C}\u{DFC1}" ]
+
+            else
+                text ""
+    in
     li
         [ class "list__item todo"
         , css
@@ -440,12 +462,15 @@ viewTodo state todo =
         ]
         [ div
             [ css
-                [ displayFlex
+                [ position relative
+                , displayFlex
                 , flex (int 1)
                 , padding2 (px 0) (px 5)
                 ]
             ]
-            [ text todo.name ]
+            [ text todo.name
+            , ifLastIcon
+            ]
         , div
             [ css
                 [ position relative

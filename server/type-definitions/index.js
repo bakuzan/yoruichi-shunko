@@ -61,9 +61,10 @@ const Todo = gql`
     id: Int
     name: String
     date: Date
-    isRepeated: Boolean
     todoTemplateId: Int
     template: TodoTemplate
+    isRepeated: Boolean
+    isLast: Boolean
   }
 `;
 

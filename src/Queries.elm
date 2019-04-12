@@ -36,6 +36,7 @@ calendarView =
                 |> with (field "name" [] string)
                 |> with (field "date" [] int)
                 |> with (field "isRepeated" [] bool)
+                |> with (field "isLast" [] bool)
                 |> with (field "todoTemplateId" [] int)
 
         todos =

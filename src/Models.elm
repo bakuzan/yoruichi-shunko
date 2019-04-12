@@ -76,13 +76,14 @@ type alias Todo =
     , name : String
     , date : Int -- Date in millis
     , isRepeated : Bool
+    , isLast : Bool
     , todoTemplateId : Int
     }
 
 
 dummyTodo : Todo
 dummyTodo =
-    Todo 0 "" 0 False 0
+    Todo 0 "" 0 False False 0
 
 
 type alias Todos =
