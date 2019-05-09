@@ -142,7 +142,7 @@ options =
     , headers =
         [ Http.header "Accept" "application/json"
         ]
-    , url = "/yri-graphql"
+    , url = "/graphql"
     , timeout = Nothing
     , withCredentials = False
     }
