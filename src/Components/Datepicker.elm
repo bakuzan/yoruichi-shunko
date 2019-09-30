@@ -57,7 +57,7 @@ view state data attrs =
                 ++ attrs
             )
          , Button.viewIcon
-            "\u{D83D}\u{DCC5}"
+            "\u{D83D}\u{DCC5}\u{FE0E}"
             { theme = state.theme, isPrimary = False }
             [ css
                 [ position relative

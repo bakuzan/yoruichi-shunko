@@ -5,7 +5,7 @@ import Components.ContextMenu as ContextMenu
 import Css exposing (..)
 import Css.Global
 import Date exposing (Unit(..), add, fromPosix)
-import Html.Styled exposing (Html, button, div, li, span, table, tbody, td, text, th, thead, tr, ul)
+import Html.Styled exposing (Html, button, div, li, span, text, ul)
 import Html.Styled.Attributes exposing (class, classList, css, disabled, id, title)
 import Html.Styled.Events exposing (onClick)
 import Models exposing (CalendarMode, Model, Theme, Todo, Todos, YRIDateProperty(..))
@@ -54,8 +54,7 @@ view state data =
                 ]
 
         tableStyle =
-            [ tableLayout fixed
-            , width (pct 100)
+            [ width (pct 100)
             , borderCollapse separate
             , borderSpacing (px 0)
             ]
@@ -74,26 +73,22 @@ view state data =
         ]
         [ viewControls state data.view
         , if state.isDatepicker || state.mode /= Models.Day then
-            table
+            div
                 [ class "yri-calendar__table", css tableStyle ]
                 [ viewDayNameHeader state
                 , viewCalendarBody state data
                 ]
 
           else
-            table
+            div
                 [ class "yri-calendar__table", css tableStyle ]
-                [ thead []
-                    [ tr []
-                        [ th []
-                            [ text (Date.format "EEEE" (Date.fromPosix state.zone data.view))
-                            ]
+                [ div [class "yri-calendar__header"]
+                    [ div [css [fontWeight bold] ]
+                        [ text (Date.format "EEEE" (Date.fromPosix state.zone data.view))
                         ]
                     ]
-                , tbody []
-                    [ tr []
-                        [ viewDay state data (Time.posixToMillis data.view)
-                        ]
+                , div [class "yri-calendar__body"]
+                    [ viewDay state data (Time.posixToMillis data.view)
                     ]
                 ]
         ]
@@ -141,7 +136,7 @@ viewControls state viewDate =
             , padding (px 5)
             ]
         ]
-        [ Button.viewIcon "‹"
+        [ Button.viewIcon "\u{2039}\u{FE0E}"
             { theme = state.theme, isPrimary = False }
             [ css btnCss
             , class "yri-calendar__shift-button button-icon"
@@ -152,7 +147,7 @@ viewControls state viewDate =
         , div
             [ class "yri-calendar__month-text" ]
             [ text displayDate ]
-        , Button.viewIcon "›"
+        , Button.viewIcon "\u{203A}\u{FE0E}"
             { theme = state.theme, isPrimary = False }
             [ css btnCss
             , class "yri-calendar__shift-button"
@@ -180,14 +175,16 @@ viewDayNameHeader state =
                 [ textAlign left ]
 
         viewHeaderCell day =
-            th [ css ([ padding2 (px 0) (px 5) ] ++ cssForTh) ]
+            div [ css ([ padding2 (px 0) (px 5), fontWeight bold ] ++ cssForTh) ]
                 [ text (Date.format "EE" day)
                 ]
     in
-    thead []
-        [ tr []
-            ([] ++ List.map viewHeaderCell (Date.range Date.Day 1 from until))
+    div [ class "yri-calendar__header"
+        , css [ property "display" "grid"
+              , property "grid-template-columns" "repeat(7, minmax(50px, 1fr))"
+              ] 
         ]
+        ([] ++ List.map viewHeaderCell (Date.range Date.Day 1 from until))
 
 
 viewCalendarBody : CalendarState -> CalendarData -> Html Msg
@@ -201,14 +198,20 @@ viewCalendarBody state data =
 
         squaresInRows =
             Common.splitList 7 days
+
+        flatten v = 
+            v |> List.foldr (++) []
+
     in
-    tbody []
-        ([]
-            ++ List.map (viewCalendarWeek state data) squaresInRows
-        )
+    div [ css [ property "display" "grid"
+              , property "grid-template-columns" "repeat(7, minmax(50px, 1fr))"
+              , property "grid-auto-rows" "1fr"
+              ] 
+        ]
+        (flatten (List.map (viewCalendarWeek state data) squaresInRows))
 
 
-viewCalendarWeek : CalendarState -> CalendarData -> List Int -> Html Msg
+viewCalendarWeek : CalendarState -> CalendarData -> List Int -> List (Html Msg)
 viewCalendarWeek state data squares =
     let
         len =
@@ -242,16 +245,10 @@ viewCalendarWeek state data squares =
                 squares ++ populateArrayForDummies (7 - len)
     in
     if not isWeekView || state.isDatepicker || isActive then
-        tr
-            [ class "yri-calendar__week yri-week"
-            , classList [ ( "yri-week--active", isActive ) ]
-            ]
-            ([]
-                ++ List.map (viewDay state data) fullWeekOfSquares
-            )
+        List.map (viewDay state data) fullWeekOfSquares
 
     else
-        text ""
+        []
 
 
 viewDay : CalendarState -> CalendarData -> Int -> Html Msg
@@ -279,7 +276,7 @@ viewDay state data millis =
                 [ textAlign center, verticalAlign middle ]
 
             else
-                [ position relative, verticalAlign baseline, padding (px 0) ]
+                [ position relative, verticalAlign baseline, padding (px 0), overflow hidden ]
 
         dayPadding =
             padding2 (px 10) (px 5)
@@ -311,7 +308,7 @@ viewDay state data millis =
             else
                 border3 (px 1) solid (hex "efefef")
     in
-    td
+    div
         [ css
             (cssForTd
                 ++ [ tdBorder
@@ -336,7 +333,7 @@ viewDay state data millis =
             , ( "yri-day--is-today", isToday )
             ]
         ]
-        [ if state.mode == Models.Day || isDummy then
+        [ if not state.isDatepicker && (state.mode == Models.Day || isDummy) then
             text ""
 
           else if not state.isDatepicker then
@@ -345,10 +342,12 @@ viewDay state data millis =
                     [ dayPadding
                     , important (justifyContent spaceBetween)
                     , width (calc (pct 100) minus (px 10))
+                    , important (minWidth (px 50))
                     , height (px 23)
                     , boxSizing contentBox
                     ]
                 , title "View this day"
+                , Common.setCustomAttr "aria-label" "Click to view this day"
                 , onClick (Msgs.UpdateCalendarModeViewDay asPosix)
                 ]
                 (numDisplay
@@ -359,7 +358,8 @@ viewDay state data millis =
                                     , fontSize (em 1.25)
                                     , color (hex state.theme.contrast)
                                     ]
-                                , Common.setCustomAttr "icon" "★"
+                                , Common.setCustomAttr "icon" "\u{2605}\u{FE0E}"
+                                , Common.setCustomAttr "aria-label" "Today"
                                 , title "Today"
                                 ]
                                 []
@@ -393,9 +393,7 @@ viewDay state data millis =
                 ]
                 [ ul
                     [ css
-                        [ property "display" "grid"
-                        , property "grid-auto-rows" "1fr"
-                        , listStyleType none
+                        [ listStyleType none
                         , padding (px 5)
                         , paddingBottom (px 25)
                         , margin2 (px 8) (px 0)
@@ -439,13 +437,14 @@ viewTodo state todo =
                 span
                     [ css
                         [ position absolute
-                        , right (px -3)
+                        , top (px -5)
+                        , left (px 0)
                         , fontSize (em 0.5)
                         ]
                     , title isLastLabel
                     , Common.setCustomAttr "aria-label" isLastLabel
                     ]
-                    [ text " \u{D83C}\u{DFC1}" ]
+                    [ text " \u{D83C}\u{DFC1}\u{FE0E}" ]
 
             else
                 text ""
@@ -454,6 +453,7 @@ viewTodo state todo =
         [ class "list__item todo"
         , css
             [ displayFlex
+            , flexFlow2 row wrap
             , padding2 (px 5) (px 0)
             , hover
                 [ backgroundColor (hex state.theme.baseBackgroundHover)
@@ -478,7 +478,7 @@ viewTodo state todo =
                 , justifyContent flexEnd
                 ]
             ]
-            [ Button.viewIcon "⋮"
+            [ Button.viewIcon "\u{22EE}\u{FE0E}"
                 { theme = state.theme, isPrimary = False }
                 [ onClick (Msgs.OpenContextMenu todo.id)
                 ]
